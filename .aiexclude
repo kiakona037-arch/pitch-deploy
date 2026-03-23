@@ -1,0 +1,3 @@
+# Keep AGY lightweight - only index the pitch deck HTML and config
+.firebase/
+.git/
