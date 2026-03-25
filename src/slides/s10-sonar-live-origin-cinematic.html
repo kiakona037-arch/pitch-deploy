@@ -1,0 +1,249 @@
+    <!-- ========== SLIDE 10: SONAR LIVE ORIGIN (CINEMATIC) ========== -->
+    <div class="slide" id="s10">
+        <canvas id="c10"></canvas>
+        <!-- Paint splatter canvas background -->
+        <div
+            style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;overflow:hidden;pointer-events:none">
+            <!-- Drip columns -->
+            <div class="drip" style="left:8%;animation-delay:0s;width:3px"></div>
+            <div class="drip" style="left:25%;animation-delay:1.4s;width:4px"></div>
+            <div class="drip" style="left:55%;animation-delay:0.6s;width:3px"></div>
+            <div class="drip" style="left:78%;animation-delay:2.0s;width:5px"></div>
+            <div class="drip" style="left:92%;animation-delay:0.9s;width:2px"></div>
+            <!-- Large paint splatters -->
+            <div class="paint-blob"
+                style="top:5%;left:3%;width:280px;height:200px;background:radial-gradient(ellipse at 40% 50%,rgba(43,212,225,0.25),transparent 70%);transform:rotate(-15deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:60%;right:5%;width:350px;height:250px;background:radial-gradient(ellipse at 60% 40%,rgba(76,221,134,0.2),transparent 65%);transform:rotate(10deg)">
+            </div>
+            <div class="paint-blob"
+                style="bottom:5%;left:10%;width:200px;height:300px;background:radial-gradient(ellipse at 50% 60%,rgba(43,212,225,0.18),transparent 70%);transform:rotate(-8deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:15%;right:15%;width:240px;height:180px;background:radial-gradient(ellipse at 30% 70%,rgba(76,221,134,0.22),transparent 65%);transform:rotate(25deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:40%;left:20%;width:160px;height:160px;background:radial-gradient(circle,rgba(43,212,225,0.3),transparent 60%)">
+            </div>
+            <div class="paint-blob"
+                style="bottom:20%;right:25%;width:200px;height:140px;background:radial-gradient(ellipse,rgba(90,230,194,0.2),transparent 65%);transform:rotate(-20deg)">
+            </div>
+            <!-- Bright glowing streaks -->
+            <div class="streak"
+                style="top:12%;left:-5%;width:60%;height:4px;transform:rotate(-18deg);background:linear-gradient(90deg,transparent,#2bd4e1,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="top:35%;right:-5%;width:50%;height:3px;transform:rotate(12deg);background:linear-gradient(90deg,transparent,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="bottom:25%;left:10%;width:70%;height:5px;transform:rotate(-8deg);background:linear-gradient(90deg,transparent,#2bd4e1,#4cdd86,#2bd4e1,transparent)">
+            </div>
+            <div class="streak"
+                style="top:55%;right:0;width:40%;height:2px;transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(43,212,225,0.8),transparent)">
+            </div>
+            <div class="streak"
+                style="bottom:40%;left:-3%;width:45%;height:3px;transform:rotate(-30deg);background:linear-gradient(90deg,transparent,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="top:75%;left:30%;width:55%;height:2px;transform:rotate(5deg);background:linear-gradient(90deg,transparent,rgba(76,221,134,0.6),transparent)">
+            </div>
+            <!-- Small intense spots -->
+            <div
+                style="position:absolute;top:18%;left:22%;width:12px;height:12px;border-radius:50%;background:#2bd4e1;box-shadow:0 0 20px #2bd4e1,0 0 40px rgba(43,212,225,0.4);opacity:0.6">
+            </div>
+            <div
+                style="position:absolute;top:72%;right:18%;width:8px;height:8px;border-radius:50%;background:#4cdd86;box-shadow:0 0 15px #4cdd86,0 0 30px rgba(76,221,134,0.4);opacity:0.5">
+            </div>
+            <div
+                style="position:absolute;bottom:30%;left:40%;width:10px;height:10px;border-radius:50%;background:#2bd4e1;box-shadow:0 0 25px #2bd4e1;opacity:0.4">
+            </div>
+            <div
+                style="position:absolute;top:45%;right:35%;width:6px;height:6px;border-radius:50%;background:#4cdd86;box-shadow:0 0 18px #4cdd86;opacity:0.5">
+            </div>
+            <div
+                style="position:absolute;top:8%;right:8%;width:14px;height:14px;border-radius:50%;background:#5ae6c2;box-shadow:0 0 30px #5ae6c2;opacity:0.35">
+            </div>
+        </div>
+        <div class="overlay" style="background:rgba(10,10,12,0.45)"></div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content" style="align-items:center;justify-content:center;text-align:center;position:relative">
+
+            <!-- Title text (glitch decode) -->
+            <div id="s12-text" style="opacity:0;z-index:8;position:relative;transition:none">
+                <div style="font-family:'Roboto Mono',monospace;font-size:10px;color:#2bd4e1;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px"
+                    id="s12-tag">SONAR LIVE // WHERE IT ALL BEGAN</div>
+                <h1 style="font-size:48px;background:linear-gradient(135deg,#2bd4e1,#4cdd86);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"
+                    id="s12-title">The Origin</h1>
+                <p style="text-align:center;max-width:500px;margin:4px auto 0;font-size:14px;color:#5ae6c2;font-weight:300"
+                    id="s12-sub">The social engine that started it all</p>
+            </div>
+            <!-- Pixel phone (starts as tiny phone, expands) -->
+            <div id="s12-phone"
+                style="opacity:0;transform:scale(0.05);transition:all 1.2s cubic-bezier(0.16,1,0.3,1);position:relative;z-index:7;margin-top:10px">
+                <div
+                    style="height:min(78vh, 840px);aspect-ratio:9/19.5;border-radius:28px;border:3px solid rgba(43,212,225,0.5);background:#000;overflow:hidden;box-shadow:0 0 60px rgba(43,212,225,0.25),0 0 120px rgba(76,221,134,0.1),0 20px 60px rgba(0,0,0,0.6),inset 0 0 0 8px #000;position:relative">
+                    <div
+                        style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#111;border-radius:50%;border:1px solid rgba(255,255,255,0.08);z-index:2">
+                    </div>
+                    <video id="s12-video" loop muted playsinline
+                        style="width:100%;height:100%;object-fit:cover;background:#000;border-radius:25px">
+                        <source src="3 Revised.mp4" type="video/mp4">
+                    </video>
+                    <div
+                        style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:90px;height:4px;background:rgba(255,255,255,0.3);border-radius:2px;z-index:2">
+                    </div>
+                </div>
+                <div
+                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120%;height:120%;border-radius:50%;background:radial-gradient(circle,rgba(43,212,225,0.08),rgba(76,221,134,0.04) 40%,transparent 70%);z-index:-1;animation:originPulse 4s ease-in-out infinite">
+                </div>
+            </div>
+            <p id="s12-footer" class="mono"
+                style="opacity:0;font-size:10px;color:rgba(43,212,225,0.5);margin-top:12px;letter-spacing:3px;transition:opacity 1s ease">
+                SONAR LIVE &bull; ALPHA BUILD &bull; 2026</p>
+        </div>
+    </div>
+    <style>
+        .drip {
+            position: absolute;
+            top: -20%;
+            height: 140%;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(180deg, transparent 0%, rgba(43, 212, 225, 0.4) 30%, rgba(76, 221, 134, 0.3) 60%, transparent 100%);
+            animation: dripDown 6s ease-in-out infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes dripDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0
+            }
+
+            10% {
+                opacity: 0.6
+            }
+
+            80% {
+                opacity: 0.3
+            }
+
+            100% {
+                transform: translateY(100%);
+                opacity: 0
+            }
+        }
+
+        .splash {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(43, 212, 225, 0.15), rgba(76, 221, 134, 0.08) 50%, transparent 70%);
+            animation: splashPulse 5s ease-in-out infinite;
+            filter: blur(8px);
+        }
+
+        @keyframes splashPulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.3
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7
+            }
+        }
+
+        @keyframes originPulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1
+            }
+        }
+
+        /* === PAINT CANVAS STYLES === */
+        .paint-blob {
+            position: absolute;
+            filter: blur(15px);
+            opacity: 0.8;
+            animation: blobPulse 8s ease-in-out infinite;
+        }
+
+        .streak {
+            position: absolute;
+            opacity: 0.25;
+            filter: blur(1px);
+            box-shadow: 0 0 15px rgba(43, 212, 225, 0.3);
+            animation: streakGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes blobPulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1) rotate(var(--r, 0deg))
+            }
+
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1) rotate(var(--r, 0deg))
+            }
+        }
+
+        @keyframes streakGlow {
+            0% {
+                opacity: 0.15;
+                filter: blur(1px)
+            }
+
+            100% {
+                opacity: 0.35;
+                filter: blur(0.5px)
+            }
+        }
+
+        /* === GLITCH TEXT === */
+        @keyframes glitchIn {
+            0% {
+                clip-path: inset(0 100% 0 0);
+                opacity: 0;
+                transform: translateX(-20px)
+            }
+
+            50% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateX(5px)
+            }
+
+            60% {
+                transform: translateX(-3px)
+            }
+
+            70% {
+                transform: translateX(2px)
+            }
+
+            100% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .s11-glitch-in {
+            animation: glitchIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards
+        }
+    </style>
+

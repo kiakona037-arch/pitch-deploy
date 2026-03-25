@@ -1,0 +1,237 @@
+    <!-- ========== SLIDE 5: MARKET OPPORTUNITY (DONUT GRAM) ========== -->
+    <style>
+    #s5 { padding:0 !important; }
+    #s5 .mo-container { display:flex; width:100%; height:100%; }
+    #s5 .mo-map-side { flex:1.3; position:relative; overflow:hidden; }
+    #s5 .mo-donut-side { flex:0.7; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; border-left:1px solid rgba(100,90,75,0.15); background:rgba(10,10,12,0.75); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); gap:8px; }
+    #s5 .mo-tag { position:absolute; top:40px; left:60px; font-family:'Roboto Mono',monospace; font-size:12px; letter-spacing:3px; color:rgba(200,185,165,0.8); text-transform:uppercase; z-index:20; font-weight:600; }
+    #s5 .mo-map-layer { position:absolute; top:0; left:0; width:100%; height:100%; transition:opacity 1.2s ease; overflow:hidden; }
+    #s5 .mo-map-layer img { width:100%; height:100%; object-fit:cover; opacity:0.9; }
+    #s5 .mo-map-inner { position:relative; width:100%; height:100%; transition:transform 1.8s cubic-bezier(0.25,0.46,0.45,0.94); }
+    #s5 .mo-pin { position:absolute; border-radius:50%; opacity:0; transform:scale(0); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1); z-index:6; }
+    #s5 .mo-pin.on { opacity:1; transform:scale(1); }
+    #s5 .mo-pin .ring { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1px solid; animation:moPingRing 2.5s ease-out infinite; }
+    @keyframes moPingRing { 0%{width:100%;height:100%;opacity:0.7} 100%{width:350%;height:350%;opacity:0} }
+    #s5 .mo-plbl { position:absolute; font-family:'Roboto Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.5px; white-space:nowrap; opacity:0; transition:opacity 0.5s ease 0.2s; z-index:7; }
+    #s5 .mo-plbl.on { opacity:1; }
+    #s5 .mo-c-lam { background:#34d399; box-shadow:0 0 15px rgba(52,211,153,0.7); }
+    #s5 .mo-c-lam .ring { border-color:rgba(52,211,153,0.5); }
+    #s5 .mo-t-lam { color:#34d399; }
+    #s5 .mo-c-som { background:#f39c12; box-shadow:0 0 10px rgba(243,156,18,0.5); }
+    #s5 .mo-c-som .ring { border-color:rgba(243,156,18,0.4); }
+    #s5 .mo-t-som { color:#f39c12; }
+    #s5 .mo-c-sam { background:#e67e22; box-shadow:0 0 10px rgba(230,126,34,0.5); }
+    #s5 .mo-c-sam .ring { border-color:rgba(230,126,34,0.3); }
+    #s5 .mo-t-sam { color:#e67e22; }
+    #s5 .mo-c-tam { background:#a0917d; box-shadow:0 0 8px rgba(160,145,125,0.4); }
+    #s5 .mo-c-tam .ring { border-color:rgba(160,145,125,0.3); }
+    #s5 .mo-t-tam { color:rgba(180,170,155,0.85); }
+    #s5 .mo-phase-info { position:absolute; top:80px; left:60px; z-index:20; opacity:0; transition:all 0.6s ease; background:rgba(10,10,12,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(100,90,75,0.15); border-radius:12px; padding:20px 24px; }
+    #s5 .mo-phase-info.on { opacity:1; }
+    #s5 .mo-phase-info.us-pos { top:auto; bottom:60px; left:40px; }
+    #s5 .mo-phase-amt { font-size:56px; font-weight:900; line-height:1; transition:all 0.6s ease; text-shadow:0 0 20px rgba(0,0,0,0.5); }
+    #s5 .mo-phase-name { font-size:22px; font-weight:800; margin-top:4px; transition:all 0.6s ease; text-shadow:0 0 15px rgba(0,0,0,0.4); }
+    #s5 .mo-phase-sub { font-family:'Roboto Mono',monospace; font-size:12px; font-weight:600; letter-spacing:2px; color:rgba(200,185,165,0.75); margin-top:6px; text-transform:uppercase; }
+    #s5 .mo-phase-detail { font-size:14px; font-weight:500; color:rgba(200,185,165,0.7); margin-top:3px; }
+    #s5 .mo-donut-wrap { position:relative; width:340px; height:340px; }
+    /* Revenue tier table */
+    #s5 .mo-rev-table { width:92%; margin-top:16px; font-family:'Roboto Mono',monospace; }
+    #s5 .mo-rev-header { display:flex; gap:8px; padding:8px 0; border-bottom:1px solid rgba(100,90,75,0.25); margin-bottom:8px; }
+    #s5 .mo-rev-header span { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(200,185,165,0.55); font-weight:700; }
+    #s5 .mo-rev-header .rh-tier { flex:0.6; }
+    #s5 .mo-rev-header .rh-conv { flex:1; text-align:center; }
+    #s5 .mo-rev-header .rh-corr { flex:1; text-align:center; opacity:0; transition:opacity 0.6s ease; }
+    #s5 .mo-rev-header .rh-corr.on { opacity:1; }
+    #s5 .mo-rev-row { display:flex; gap:8px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,90,75,0.1); opacity:0; transform:translateY(8px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    #s5 .mo-rev-row.on { opacity:1; transform:translateY(0); }
+    #s5 .mo-rev-row .rv-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    #s5 .mo-rev-row .rv-tier { flex:0.6; font-size:18px; font-weight:900; letter-spacing:2px; }
+    #s5 .mo-rev-row .rv-conv { flex:1; font-size:20px; font-weight:900; text-align:center; }
+    #s5 .mo-rev-row .rv-corr { flex:1; font-size:18px; font-weight:800; text-align:center; opacity:0; transform:translateX(10px); transition:opacity 0.6s ease, transform 0.6s ease; }
+    #s5 .mo-rev-row .rv-corr.on { opacity:1; transform:translateX(0); }
+    #s5 .mo-corr-source { font-size:8px; color:rgba(200,185,165,0.35); text-align:right; margin-top:6px; letter-spacing:1px; text-transform:uppercase; opacity:0; transition:opacity 0.6s ease; }
+    #s5 .mo-corr-source.on { opacity:1; }
+    /* Merged state */
+    #s5 .mo-rev-row .rv-conv.merged { text-align:center; transition:all 0.6s ease; }
+    #s5 .mo-rev-row .rv-conv.glow-snap { text-shadow:0 0 20px currentColor; transform:scale(1.05); transition:text-shadow 0.3s ease, transform 0.3s ease; }
+    #s5 .mo-rev-header .rh-total { flex:1; text-align:center; opacity:0; transition:opacity 0.6s ease; color:rgba(200,185,165,0.7); font-size:12px; font-weight:800; }
+    #s5 .mo-rev-header .rh-total.on { opacity:1; }
+    #s5 .mo-donut-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:5; }
+    #s5 .mo-dc-label { font-size:18px; font-weight:800; letter-spacing:1px; transition:all 0.6s ease; }
+    #s5 .mo-dc-sub { font-size:12px; color:#a0917d; font-weight:600; margin-top:2px; }
+    #s5 .mo-donut-arc { opacity:0; transition:opacity 0.6s ease; }
+    #s5 .mo-donut-arc.on { opacity:1; }
+    #s5 .mo-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:24px; justify-content:center; }
+    #s5 .mo-leg { display:flex; align-items:center; gap:6px; opacity:0; transition:opacity 0.5s ease; }
+    #s5 .mo-leg.on { opacity:1; }
+    #s5 .mo-ld { width:12px; height:12px; border-radius:50%; }
+    #s5 .mo-stat-block { font-family:'Roboto Mono',monospace; font-size:13px; font-weight:500; color:rgba(200,185,165,0.75); text-align:center; margin-top:16px; min-height:54px; transition:all 0.6s ease; line-height:1.8; }
+    #s5 .mo-stat-row { opacity:0; transform:translateY(6px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    #s5 .mo-stat-row.on { opacity:1; transform:translateY(0); }
+    body.projector-mode #s5 .mo-phase-amt { font-size:64px; }
+    body.projector-mode #s5 .mo-phase-name { font-size:28px; font-weight:800; }
+    body.projector-mode #s5 .mo-phase-sub { font-size:14px; letter-spacing:3px; color:rgba(160,145,125,0.7); }
+    body.projector-mode #s5 .mo-phase-detail { font-size:16px; color:rgba(160,145,125,0.6); font-weight:500; }
+    body.projector-mode #s5 .mo-plbl { font-size:11px !important; font-weight:600 !important; }
+    body.projector-mode #s5 .mo-dc-label { font-size:22px; font-weight:800; }
+    body.projector-mode #s5 .mo-dc-sub { font-size:13px; color:#a0917d; font-weight:500; }
+    body.projector-mode #s5 .mo-leg span { font-size:14px !important; font-weight:700 !important; }
+    body.projector-mode #s5 .mo-stat-block { font-size:14px; color:rgba(160,145,125,0.7); font-weight:500; }
+    </style>
+
+    <div class="slide" id="s5">
+        <div class="mo-tag">SONAR CONVENTIONS // MARKET OPPORTUNITY</div>
+        <div class="mo-container">
+            <div class="mo-map-side">
+                <div class="mo-map-layer" id="moSocalLayer" style="opacity:1">
+                    <div class="mo-map-inner" id="moSocalInner" style="transform:scale(1.3) translate(0,0)">
+                        <img src="socal-map.png" alt="SoCal Convention Map"/>
+                        <div class="mo-pin mo-c-lam" id="mo-p-lbcc" style="width:16px;height:16px;left:52.7%;top:53.5%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-lam" id="mo-pl-lbcc" style="left:54.5%;top:52%;font-size:11px;font-weight:700">LBCC</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-lacc" style="width:11px;height:11px;left:51.8%;top:39.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-lacc" style="left:53.5%;top:37.5%">LA CC</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-anaheim" style="width:11px;height:11px;left:61.0%;top:48.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-anaheim" style="left:63%;top:46.5%">Anaheim</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-sandiego" style="width:11px;height:11px;left:79.4%;top:95.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-sandiego" style="left:81%;top:93.5%">San Diego</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-pasadena" style="width:9px;height:9px;left:55.7%;top:34.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-pasadena" style="left:57.5%;top:32%;font-size:7px">Pasadena</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-ontario" style="width:9px;height:9px;left:66.6%;top:38.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-ontario" style="left:68.5%;top:36%;font-size:7px">Ontario</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-riverside" style="width:9px;height:9px;left:80.1%;top:42.5%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-riverside" style="left:82%;top:40.5%;font-size:7px">Riverside</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-palmsprings" style="width:9px;height:9px;left:96.8%;top:44.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-palmsprings" style="left:88%;top:42%;font-size:7px">Palm Springs</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-santabarbara" style="width:8px;height:8px;left:26.7%;top:36.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-santabarbara" style="left:28.5%;top:34.5%;font-size:7px">Santa Barbara</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-ventura" style="width:8px;height:8px;left:31.6%;top:39.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-ventura" style="left:33.5%;top:37.5%;font-size:7px">Ventura</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-delmar" style="width:8px;height:8px;left:74.8%;top:75.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-delmar" style="left:76.5%;top:73%;font-size:7px">Del Mar</div>
+                    </div>
+                </div>
+                <div class="mo-map-layer" id="moUsLayer" style="opacity:0">
+                    <div class="mo-map-inner" id="moUsInner">
+                        <img src="us-map-dark.png" alt="US Convention Map"/>
+                        <div class="mo-pin mo-c-lam" id="mo-p2-longbeach" style="width:10px;height:10px;left:10.2%;top:60.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-lam" id="mo-pl2-longbeach" style="left:11.5%;top:58%;font-size:8px;font-weight:700">Long Beach</div>
+                        <div class="mo-pin mo-c-som" id="mo-p2-sandiego" style="width:10px;height:10px;left:11.7%;top:63.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl2-sandiego" style="left:13%;top:61.5%;font-size:8px;font-weight:600">San Diego</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sf" style="width:9px;height:9px;left:5.2%;top:45.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sf" style="left:1%;top:43.5%">San Francisco</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-lv" style="width:9px;height:9px;left:16.7%;top:56.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-lv" style="left:18%;top:54%">Las Vegas</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-phx" style="width:9px;height:9px;left:22.0%;top:62.0%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-phx" style="left:23.5%;top:60%">Phoenix</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sea" style="width:9px;height:9px;left:11.1%;top:16.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sea" style="left:12.5%;top:14%">Seattle</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-pdx" style="width:8px;height:8px;left:8.2%;top:19.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-pdx" style="left:9.5%;top:17.5%;font-size:7px">Portland</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-den" style="width:9px;height:9px;left:34.3%;top:48.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-den" style="left:35.5%;top:46.5%">Denver</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-slc" style="width:8px;height:8px;left:23.2%;top:43.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-slc" style="left:24.5%;top:41%;font-size:7px">SLC</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-austin" style="width:9px;height:9px;left:47.4%;top:75.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-austin" style="left:49%;top:73%">Austin</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-dallas" style="width:9px;height:9px;left:48.6%;top:69.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-dallas" style="left:50%;top:67.5%">Dallas</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-houston" style="width:9px;height:9px;left:53.8%;top:79.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-houston" style="left:55%;top:77%">Houston</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-abq" style="width:8px;height:8px;left:32.5%;top:61.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-abq" style="left:34%;top:59%;font-size:7px">Albuquerque</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sanantonio" style="width:8px;height:8px;left:46.1%;top:77.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sanantonio" style="left:42%;top:79%;font-size:7px">San Antonio</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-chi" style="width:8px;height:8px;left:64.6%;top:40.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-chi" style="left:66%;top:38.5%;font-size:7px">Chicago</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nyc" style="width:8px;height:8px;left:88.3%;top:38.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nyc" style="left:89.5%;top:36.5%;font-size:7px">New York</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-dc" style="width:8px;height:8px;left:84.8%;top:45.3%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-dc" style="left:86%;top:43%;font-size:7px">DC</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-mia" style="width:8px;height:8px;left:83.2%;top:87.5%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-mia" style="left:84.5%;top:85.5%;font-size:7px">Miami</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-atl" style="width:8px;height:8px;left:74.9%;top:66.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-atl" style="left:76.5%;top:64.5%;font-size:7px">Atlanta</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-msp" style="width:8px;height:8px;left:55.7%;top:32.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-msp" style="left:57%;top:30%;font-size:7px">Minneapolis</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nash" style="width:8px;height:8px;left:67.4%;top:56.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nash" style="left:69%;top:54.5%;font-size:7px">Nashville</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-orl" style="width:8px;height:8px;left:80.1%;top:80.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-orl" style="left:81.5%;top:78.5%;font-size:7px">Orlando</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nola" style="width:8px;height:8px;left:62.8%;top:78.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nola" style="left:64%;top:76.5%;font-size:7px">New Orleans</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-tampa" style="width:8px;height:8px;left:77.7%;top:80.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-tampa" style="left:73.5%;top:82%;font-size:7px">Tampa Bay</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-pit" style="width:8px;height:8px;left:78.5%;top:41.9%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-pit" style="left:80%;top:39.5%;font-size:7px">Pittsburgh</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-det" style="width:8px;height:8px;left:71.6%;top:38.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-det" style="left:73%;top:36.5%;font-size:7px">Detroit</div>
+                    </div>
+                </div>
+                <div class="mo-phase-info" id="moPhaseInfo">
+                    <div class="mo-phase-amt" id="moPhaseAmt"></div>
+                    <div class="mo-phase-name" id="moPhaseName"></div>
+                    <div class="mo-phase-sub" id="moPhaseSub"></div>
+                    <div class="mo-phase-detail" id="moPhaseDetail"></div>
+                </div>
+            </div>
+            <div class="mo-donut-side">
+                <div class="mo-donut-wrap">
+                    <svg viewBox="0 0 320 320" style="width:100%;height:100%;transform:rotate(-90deg)" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="160" cy="160" r="148" fill="none" stroke="rgba(160,145,125,0.08)" stroke-width="22" class="mo-donut-arc" id="mo-d-tam-bg"/>
+                        <circle cx="160" cy="160" r="148" fill="none" stroke="#a0917d" stroke-width="22" stroke-dasharray="930" stroke-dashoffset="930" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(160,145,125,0.3));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-tam"/>
+                        <circle cx="160" cy="160" r="118" fill="none" stroke="rgba(230,126,34,0.06)" stroke-width="20" class="mo-donut-arc" id="mo-d-sam-bg"/>
+                        <circle cx="160" cy="160" r="118" fill="none" stroke="#e67e22" stroke-width="20" stroke-dasharray="742" stroke-dashoffset="742" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(230,126,34,0.3));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-sam"/>
+                        <circle cx="160" cy="160" r="88" fill="none" stroke="rgba(243,156,18,0.06)" stroke-width="18" class="mo-donut-arc" id="mo-d-som-bg"/>
+                        <circle cx="160" cy="160" r="88" fill="none" stroke="#f39c12" stroke-width="18" stroke-dasharray="553" stroke-dashoffset="553" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(243,156,18,0.4));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-som"/>
+                        <circle cx="160" cy="160" r="55" fill="none" stroke="rgba(52,211,153,0.06)" stroke-width="16" class="mo-donut-arc" id="mo-d-lam-bg"/>
+                        <circle cx="160" cy="160" r="55" fill="none" stroke="#34d399" stroke-width="16" stroke-dasharray="346" stroke-dashoffset="346" stroke-linecap="round" style="filter:drop-shadow(0 0 10px rgba(52,211,153,0.5));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-lam"/>
+                    </svg>
+                    <div class="mo-donut-center">
+                        <div class="mo-dc-label" id="moCLabel" style="color:#34d399"></div>
+                        <div class="mo-dc-sub" id="moCSub"></div>
+                    </div>
+                </div>
+                <div class="mo-legend">
+                    <div class="mo-leg" id="mo-leg-tam"><div class="mo-ld" style="background:#a0917d"></div><span style="font-size:14px;color:#a0917d;font-weight:700">TAM $15.8B</span></div>
+                    <div class="mo-leg" id="mo-leg-sam"><div class="mo-ld" style="background:#e67e22"></div><span style="font-size:14px;color:#e67e22;font-weight:700">SAM $2.5B</span></div>
+                    <div class="mo-leg" id="mo-leg-som"><div class="mo-ld" style="background:#f39c12"></div><span style="font-size:14px;color:#f39c12;font-weight:700">SOM $45.5M</span></div>
+                    <div class="mo-leg" id="mo-leg-lam"><div class="mo-ld" style="background:#34d399"></div><span style="font-size:14px;color:#34d399;font-weight:700">LAM $612K</span></div>
+                </div>
+                <div class="mo-stat-block" id="moStatBlock">
+                    <div class="mo-stat-row" id="moStat1"></div>
+                    <div class="mo-stat-row" id="moStat2"></div>
+                    <div class="mo-stat-row" id="moStat3"></div>
+                </div>
+                <!-- Revenue Tier Table + Corridor Revenue -->
+                <div class="mo-rev-table" id="moRevTable">
+                    <div class="mo-rev-header">
+                        <span class="rh-tier"></span>
+                        <span class="rh-conv" id="moRevConvHead">Convention Rev</span>
+                        <span class="rh-corr" id="moRevCorrHead">Corridor Rev</span>
+                        <span class="rh-total" id="moRevTotalHead">Total Revenue</span>
+                    </div>
+                    <div class="mo-rev-row" id="moRevLam">
+                        <div class="rv-dot" style="background:#34d399"></div>
+                        <div class="rv-tier" style="color:#34d399">LAM</div>
+                        <div class="rv-conv" style="color:#34d399">$612K</div>
+                        <div class="rv-corr" id="moRevCorrLam" style="color:#34d399">$76K</div>
+                    </div>
+                    <div class="mo-rev-row" id="moRevSom">
+                        <div class="rv-dot" style="background:#f39c12"></div>
+                        <div class="rv-tier" style="color:#f39c12">SOM</div>
+                        <div class="rv-conv" style="color:#f39c12">$45.5M</div>
+                        <div class="rv-corr" id="moRevCorrSom" style="color:#f39c12">$5.7M</div>
+                    </div>
+                    <div class="mo-rev-row" id="moRevSam">
+                        <div class="rv-dot" style="background:#e67e22"></div>
+                        <div class="rv-tier" style="color:#e67e22">SAM</div>
+                        <div class="rv-conv" style="color:#e67e22">$2.5B</div>
+                        <div class="rv-corr" id="moRevCorrSam" style="color:#e67e22">$312M</div>
+                    </div>
+                    <div class="mo-corr-source" id="moCorrSource">CEIR multiplier · Local venues pay to advertise &amp; engage attendees via Sonar</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+

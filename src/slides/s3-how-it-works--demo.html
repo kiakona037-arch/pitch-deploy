@@ -1,0 +1,61 @@
+<!-- ========== SLIDE 3: HOW IT WORKS / DEMO ========== -->
+    <div class="slide" id="s3">
+        <canvas id="c3"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.8)"></div>
+        <div class="content" style="align-items:stretch;justify-content:center">
+            <div class="tag">SONAR CONVENTIONS // HOW WE FIX THIS</div>
+            <h1 class="anim orange" data-s="3" data-st="0">One Solution</h1>
+            <p class="sub anim" data-s="3" data-st="0" style="max-width:700px">Like <span
+                    style="color:#0a66c2;font-weight:600">LinkedIn</span>, but <span
+                    style="color:#e67e22;font-weight:700">live</span> &mdash; it automatically connects <span
+                    style="color:#e67e22;font-weight:600">vendor services</span> with <span
+                    style="color:#e67e22;font-weight:600">attendee intent</span> so everyone maximizes their <span
+                    style="color:#f39c12;font-weight:600">time, effort, and investment.</span></p>
+
+            <!-- Solution cards (left) + Phone video (right) -->
+            <div class="anim" data-s="3" data-st="0" style="display:flex;gap:28px;flex:1;margin-top:12px;align-items:stretch">
+                <!-- Left sidebar: Solution cards -->
+                <div style="flex:0 0 30%;display:flex;flex-direction:column;gap:14px;justify-content:center">
+                    <div class="card anim" data-s="3" data-st="0" style="flex:1;padding:24px;border-left:3px solid #e67e22">
+                        <div class="ct" style="font-size:18px;margin-bottom:8px;">&#x1F4F1; Proximity Awareness</div>
+                        <div class="cb" style="font-size:14px;line-height:1.6;">Attendees see nearby booths, exhibitors, and
+                            live activity &mdash; all through their
+                            phone.</div>
+                    </div>
+                    <div class="card anim" data-s="3" data-st="0" style="flex:1;padding:24px;border-left:3px solid #f39c12">
+                        <div class="ct" style="font-size:18px;margin-bottom:8px;">&#x1F4CA; Real-Time Analytics</div>
+                        <div class="cb" style="font-size:14px;line-height:1.6;">Exhibitors get live foot traffic, dwell
+                            time, and engagement data for every booth
+                            visit.</div>
+                    </div>
+                    <div class="card anim" data-s="3" data-st="0" style="flex:1;padding:24px;border-left:3px solid #34d399">
+                        <div class="ct" style="font-size:18px;margin-bottom:8px;">&#x1F91D; Smart Matching</div>
+                        <div class="cb" style="font-size:14px;line-height:1.6;">Attendees are matched to exhibitors based on
+                            intent.</div>
+                    </div>
+                </div>
+
+                <!-- Right: Phone-frame video -->
+                <div style="flex:1;display:flex;align-items:center;justify-content:center">
+                    <div style="flex:0 0 auto;position:relative">
+                        <div
+                            style="height:min(78vh, 840px);aspect-ratio:9/19.5;border-radius:28px;border:3px solid rgba(230,126,34,0.4);background:#000;overflow:hidden;box-shadow:0 0 40px rgba(230,126,34,0.15),0 20px 60px rgba(0,0,0,0.6),inset 0 0 0 8px #000;position:relative">
+                            <!-- Pixel punch-hole camera -->
+                            <div
+                                style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#111;border-radius:50%;border:1px solid rgba(255,255,255,0.08);z-index:2">
+                            </div>
+                            <video autoplay loop muted playsinline
+                                style="width:100%;height:100%;object-fit:cover;background:#000;border-radius:25px">
+                                <source src="1 Ready To Go.mp4" type="video/mp4">
+                            </video>
+                            <!-- Android gesture bar -->
+                            <div
+                                style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:90px;height:4px;background:rgba(255,255,255,0.3);border-radius:2px;z-index:2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonar Conventions - Full Pitch Deck</title>
+    <!-- Preload fonts for faster rendering (replaces render-blocking @import) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #0a0a0c;
+            color: #e6e0d8;
+            font-family: 'Inter', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            padding: 50px 70px;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: opacity;
+            transform: translateZ(0)
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1
+        }
+
+        .tag {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            color: #8b7355;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 70px
+        }
+
+        h1 {
+            font-size: 46px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 8px
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .sub {
+            font-size: 16px;
+            color: #a0917d;
+            font-weight: 300;
+            max-width: 550px;
+            line-height: 1.5
+        }
+
+        .card {
+            background: rgba(20, 18, 15, 0.85);
+            border: 1px solid rgba(230, 126, 34, 0.15);
+            border-radius: 10px;
+            padding: 22px 18px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #e67e22)
+        }
+
+        .ct {
+            font-size: 14px;
+            font-weight: 700;
+            color: #e67e22;
+            margin-bottom: 4px
+        }
+
+        .cb {
+            font-size: 12px;
+            color: #8b7d6b;
+            line-height: 1.5
+        }
+
+        .anim {
+            opacity: 0;
+            transform: translateY(20px) translateZ(0);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+            backface-visibility: hidden
+        }
+
+        .anim.on {
+            opacity: 1;
+            transform: translateY(0) translateZ(0)
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 9px;
+            color: #3a3530;
+            letter-spacing: 2px;
+            z-index: 100
+        }
+
+        .slide-num {
+            position: fixed;
+            bottom: 12px;
+            right: 30px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            color: #4a4035;
+            z-index: 100
+        }
+
+        .orange {
+            color: #e67e22
+        }
+
+        .red {
+            color: #e74c3c
+        }
+
+        .amber {
+            color: #f39c12
+        }
+
+        .teal {
+            color: #34d399
+        }
+
+        .dim {
+            color: #8b7d6b
+        }
+
+        .white {
+            color: #ece7e0
+        }
+
+        .bold {
+            font-weight: 700
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace
+        }
+
+        /* === SLIDE 1 STREAK ANIMATION === */
+        .s1-streak {
+            background: linear-gradient(90deg, #ece7e0 0%, #ece7e0 40%, #4cdd86 50%, #2bd4e1 55%, #ece7e0 60%, #ece7e0 100%);
+            background-size: 300% 100%;
+            background-position: 100% 0;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: streakSweep 2.5s ease-in-out 1.5s forwards;
+        }
+
+        @keyframes streakSweep {
+            0% {
+                background-position: 100% 0;
+            }
+
+            100% {
+                background-position: 0% 0;
+            }
+        }
+
+        /* ===== RESPONSIVE SCALING ===== */
+        /* Medium screens (smaller laptops, 15" at 1080p) */
+        @media (max-height: 850px) {
+            .slide .content {
+                transform: scale(0.85);
+                transform-origin: top center;
+            }
+        }
+
+        /* Small screens (13" laptops, 768p) */
+        @media (max-height: 700px) {
+            .slide .content {
+                transform: scale(0.7);
+                transform-origin: top center;
+            }
+        }
+
+        /* Very small */
+        @media (max-height: 550px) {
+            .slide .content {
+                transform: scale(0.55);
+                transform-origin: top center;
+            }
+        }
+
+        /* Mobile overlay */
+        #mobile-notice {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, #0a0a0c 0%, #1a1510 50%, #0a0a0c 100%);
+            color: #fff;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            #mobile-notice {
+                display: flex;
+            }
+
+            .slide,
+            .nav,
+            .slide-num {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Mobile Notice -->
+    <div id="mobile-notice">
+        <div style="font-size:48px;margin-bottom:20px">📡</div>
+        <div
+            style="font-size:28px;font-weight:800;background:linear-gradient(135deg,#e67e22,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px">
+            Sonar Conventions</div>
+        <div style="font-size:16px;color:rgba(255,255,255,0.7);margin-bottom:30px;line-height:1.6">This presentation is
+            optimized for<br>desktop & laptop viewing.</div>
+        <div
+            style="padding:14px 28px;border-radius:12px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.3);font-size:13px;color:#f39c12;letter-spacing:1px">
+            Open on your computer &rarr;</div>
+        <div style="margin-top:20px;font-size:12px;color:rgba(255,255,255,0.35)">sonar-live-stable-test.web.app</div>
+    </div>
+
