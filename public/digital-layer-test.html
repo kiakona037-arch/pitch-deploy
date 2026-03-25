@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Digital Layer — Convention Floor Activation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0c; width:100vw; height:100vh; overflow:hidden; font-family:'Inter',sans-serif; }
+
+.scene {
+    position:relative; width:100%; height:100%;
+    perspective:1200px;
+    display:flex; align-items:center; justify-content:center;
+}
+
+/* Convention floor — isometric grid */
+.floor-wrap {
+    position:relative;
+    width:700px; height:500px;
+    transform: rotateX(55deg) rotateZ(-30deg);
+    transform-style:preserve-3d;
+}
+
+/* Grid lines on the floor */
+.floor-grid {
+    position:absolute; top:0; left:0; width:100%; height:100%;
+    background-image:
+        linear-gradient(rgba(100,90,75,0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(100,90,75,0.15) 1px, transparent 1px);
+    background-size: 50px 50px;
+    border:1px solid rgba(100,90,75,0.1);
+}
+
+/* Individual booths */
+.booth {
+    position:absolute;
+    width:38px; height:38px;
+    background:rgba(40,36,30,0.9);
+    border:1px solid rgba(100,90,75,0.2);
+    border-radius:3px;
+    transition: all 0.8s ease;
+    transform-style:preserve-3d;
+}
+
+.booth .booth-top {
+    position:absolute; top:-6px; left:0; width:100%; height:100%;
+    background:rgba(60,54,44,0.8);
+    border:1px solid rgba(100,90,75,0.25);
+    border-radius:3px;
+    transform:translateZ(6px);
+}
+
+/* Booth glow states */
+.booth.tier-basic {
+    /* stays dark — no upgrade */
+}
+
+.booth.tier-pro .booth-top {
+    background:rgba(230,126,34,0.25);
+    border-color:rgba(230,126,34,0.5);
+    box-shadow: 0 0 12px rgba(230,126,34,0.4), inset 0 0 8px rgba(230,126,34,0.2);
+}
+.booth.tier-pro::after {
+    content:'';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:50px; height:50px;
+    border-radius:50%;
+    border:2px solid rgba(230,126,34,0.6);
+    animation:ringPulse 2s ease-out infinite;
+}
+
+.booth.tier-premium .booth-top {
+    background:rgba(243,156,18,0.35);
+    border-color:rgba(243,156,18,0.7);
+    box-shadow: 0 0 20px rgba(243,156,18,0.6), inset 0 0 10px rgba(243,156,18,0.3);
+}
+.booth.tier-premium::after {
+    content:'';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:55px; height:55px;
+    border-radius:50%;
+    border:2px solid rgba(243,156,18,0.8);
+    animation:ringPulse 1.8s ease-out infinite;
+}
+.booth.tier-premium::before {
+    content:'';
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:70px; height:70px;
+    border-radius:50%;
+    border:1px solid rgba(243,156,18,0.3);
+    animation:ringPulse 2.5s ease-out 0.5s infinite;
+}
+
+@keyframes ringPulse {
+    0% { transform:translate(-50%,-50%) scale(0.8); opacity:1; }
+    100% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
+}
+
+/* Digital layer — the descending cube/grid */
+.digital-layer {
+    position:absolute;
+    top:-120%; left:-5%; width:110%; height:110%;
+    background:
+        linear-gradient(rgba(230,126,34,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230,126,34,0.08) 1px, transparent 1px);
+    background-size:50px 50px;
+    border:2px solid rgba(230,126,34,0.3);
+    box-shadow:
+        0 0 40px rgba(230,126,34,0.15),
+        inset 0 0 60px rgba(230,126,34,0.05);
+    opacity:0;
+    transition: top 3s cubic-bezier(0.25,0.46,0.45,0.94), opacity 1s ease;
+    pointer-events:none;
+    z-index:10;
+}
+
+.digital-layer.descending {
+    opacity:1;
+    top:-5%;
+}
+
+.digital-layer.landed {
+    top:0%;
+    opacity:0.7;
+    background:
+        linear-gradient(rgba(230,126,34,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230,126,34,0.04) 1px, transparent 1px);
+    background-size:50px 50px;
+    border-color:rgba(230,126,34,0.15);
+    box-shadow:
+        0 0 20px rgba(230,126,34,0.08),
+        inset 0 0 30px rgba(230,126,34,0.02);
+    transition: top 1.5s ease, opacity 1.5s ease, background 1.5s ease, border-color 1.5s ease, box-shadow 1.5s ease;
+}
+
+/* Scan line */
+.scan-line {
+    position:absolute;
+    top:0; left:0; width:100%; height:3px;
+    background:linear-gradient(90deg, transparent, rgba(230,126,34,0.7), rgba(243,156,18,0.9), rgba(230,126,34,0.7), transparent);
+    box-shadow:0 0 20px rgba(230,126,34,0.5);
+    opacity:0;
+    z-index:11;
+    pointer-events:none;
+}
+
+.scan-line.active {
+    opacity:1;
+    animation:scanDown 2s ease-in-out forwards;
+}
+
+@keyframes scanDown {
+    0% { top:0%; opacity:0.5; }
+    10% { opacity:1; }
+    90% { opacity:1; }
+    100% { top:100%; opacity:0; }
+}
+
+/* Connection beams between activated booths */
+.connection-beam {
+    position:absolute;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(230,126,34,0.4), transparent);
+    opacity:0;
+    z-index:5;
+    transform-origin:left center;
+    transition:opacity 0.8s ease;
+}
+.connection-beam.on { opacity:1; }
+
+/* HUD text overlays */
+.hud-text {
+    position:fixed;
+    font-family:'Roboto Mono',monospace;
+    color:rgba(230,126,34,0.8);
+    z-index:50;
+    opacity:0;
+    transition:opacity 0.8s ease;
+    text-transform:uppercase;
+    letter-spacing:3px;
+}
+.hud-text.on { opacity:1; }
+
+.hud-title {
+    top:60px; left:50%; transform:translateX(-50%);
+    font-size:11px;
+    color:rgba(200,185,165,0.6);
+}
+
+.hud-status {
+    bottom:100px; left:50%; transform:translateX(-50%);
+    font-size:14px;
+    font-weight:700;
+    text-align:center;
+}
+
+.hud-counter {
+    bottom:60px; left:50%; transform:translateX(-50%);
+    font-size:28px;
+    font-weight:900;
+    text-align:center;
+}
+
+/* Legend */
+.legend {
+    position:fixed;
+    bottom:40px; right:60px;
+    display:flex; flex-direction:column; gap:10px;
+    z-index:50;
+    opacity:0;
+    transition:opacity 0.8s ease;
+}
+.legend.on { opacity:1; }
+.legend-item {
+    display:flex; align-items:center; gap:10px;
+    font-family:'Roboto Mono',monospace;
+    font-size:12px;
+    font-weight:600;
+}
+.legend-dot {
+    width:14px; height:14px; border-radius:50%;
+}
+
+/* Incoming game text */
+.incoming {
+    position:fixed;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    font-family:'Roboto Mono',monospace;
+    font-size:32px;
+    font-weight:900;
+    color:#e67e22;
+    text-transform:uppercase;
+    letter-spacing:6px;
+    text-shadow:0 0 30px rgba(230,126,34,0.6), 0 0 60px rgba(230,126,34,0.3);
+    opacity:0;
+    z-index:100;
+    text-align:center;
+    line-height:1.6;
+}
+
+/* Ambient particles */
+.particle {
+    position:fixed;
+    width:2px; height:2px;
+    background:rgba(230,126,34,0.4);
+    border-radius:50%;
+    z-index:2;
+    opacity:0;
+}
+</style>
+</head>
+<body>
+
+<div class="hud-text hud-title" id="hudTitle">SONAR CONVENTIONS // DIGITAL LAYER</div>
+
+<div class="incoming" id="incoming">
+    ⚡ INCOMING LAYER ⚡<br>
+    <span style="font-size:18px;color:#f39c12;letter-spacing:4px">DIGITAL OVERLAY ACTIVATED</span>
+</div>
+
+<div class="hud-text hud-status" id="hudStatus"></div>
+<div class="hud-text hud-counter" id="hudCounter"></div>
+
+<div class="legend" id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(60,54,44,0.8);border:1px solid rgba(100,90,75,0.3)"></div><span style="color:#6b5d4e">Basic — Free</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(230,126,34,0.4);border:2px solid rgba(230,126,34,0.6)"></div><span style="color:#e67e22">Pro — $795/event</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:rgba(243,156,18,0.5);border:2px solid rgba(243,156,18,0.8);box-shadow:0 0 8px rgba(243,156,18,0.4)"></div><span style="color:#f39c12">Premium — $1,995/event</span></div>
+</div>
+
+<div class="scene">
+    <div class="floor-wrap" id="floor">
+        <div class="floor-grid"></div>
+        <div class="digital-layer" id="digitalLayer"></div>
+        <div class="scan-line" id="scanLine"></div>
+    </div>
+</div>
+
+<script>
+// Generate booth grid
+var floor = document.getElementById('floor');
+var booths = [];
+var cols = 12, rows = 8;
+var spacing = 54;
+var offsetX = 20, offsetY = 20;
+
+for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+        var b = document.createElement('div');
+        b.className = 'booth';
+        b.style.left = (offsetX + c * spacing) + 'px';
+        b.style.top = (offsetY + r * spacing) + 'px';
+        b.innerHTML = '<div class="booth-top"></div>';
+        floor.appendChild(b);
+        booths.push(b);
+    }
+}
+
+// Shuffle array
+function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+}
+
+// Assign tiers: 35% basic, 40% pro, 25% premium (= 65% activated)
+var indices = [];
+for (var i = 0; i < booths.length; i++) indices.push(i);
+shuffle(indices);
+
+var totalBooths = booths.length;
+var numBasic = Math.floor(totalBooths * 0.35);
+var numPro = Math.floor(totalBooths * 0.40);
+// rest are premium
+
+var tiers = [];
+for (var i = 0; i < totalBooths; i++) tiers.push('basic');
+for (var i = 0; i < numPro; i++) tiers[indices[i]] = 'pro';
+for (var i = numPro; i < numPro + (totalBooths - numBasic - numPro); i++) tiers[indices[i]] = 'premium';
+
+// Animation timeline
+var dl = document.getElementById('digitalLayer');
+var sl = document.getElementById('scanLine');
+var incoming = document.getElementById('incoming');
+var hudTitle = document.getElementById('hudTitle');
+var hudStatus = document.getElementById('hudStatus');
+var hudCounter = document.getElementById('hudCounter');
+var legend = document.getElementById('legend');
+
+// Phase 1: "INCOMING LAYER" text (0-2.5s)
+setTimeout(function() {
+    incoming.style.opacity = '1';
+    incoming.style.transition = 'opacity 0.6s ease';
+}, 500);
+
+setTimeout(function() {
+    incoming.style.opacity = '0';
+}, 2500);
+
+// Phase 2: Digital layer descends (3s)
+setTimeout(function() {
+    hudTitle.classList.add('on');
+    dl.classList.add('descending');
+}, 3000);
+
+// Phase 3: Layer lands + scan line (6s)
+setTimeout(function() {
+    dl.classList.remove('descending');
+    dl.classList.add('landed');
+    sl.classList.add('active');
+    hudStatus.textContent = 'SCANNING FLOOR...';
+    hudStatus.classList.add('on');
+}, 6200);
+
+// Phase 4: Booths activate one by one (8s)
+var activatedCount = 0;
+var proCount = 0;
+var premCount = 0;
+
+setTimeout(function() {
+    hudStatus.textContent = 'ACTIVATING BOOTHS...';
+    
+    // Activate booths with staggered timing
+    var order = [];
+    for (var i = 0; i < totalBooths; i++) order.push(i);
+    shuffle(order);
+    
+    order.forEach(function(idx, i) {
+        setTimeout(function() {
+            if (tiers[idx] === 'pro') {
+                booths[idx].classList.add('tier-pro');
+                proCount++;
+            } else if (tiers[idx] === 'premium') {
+                booths[idx].classList.add('tier-premium');
+                premCount++;
+            } else {
+                booths[idx].classList.add('tier-basic');
+            }
+            activatedCount++;
+            var pct = Math.round((proCount + premCount) / totalBooths * 100);
+            hudCounter.textContent = pct + '% UPGRADED';
+            hudCounter.classList.add('on');
+        }, i * 60);
+    });
+}, 8500);
+
+// Phase 5: Show legend + final stats (15s)
+setTimeout(function() {
+    legend.classList.add('on');
+    hudStatus.textContent = 'DIGITAL LAYER ACTIVE';
+    hudStatus.style.color = '#34d399';
+    hudCounter.style.color = '#f39c12';
+    hudCounter.style.fontSize = '36px';
+    hudCounter.style.textShadow = '0 0 20px rgba(243,156,18,0.5)';
+}, 15000);
+
+// Add ambient particles
+for (var p = 0; p < 30; p++) {
+    var particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.top = Math.random() * 100 + '%';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    document.body.appendChild(particle);
+    
+    (function(el, delay) {
+        setTimeout(function() {
+            el.style.opacity = '0.4';
+            el.style.transition = 'opacity 2s ease, top 8s linear';
+            el.style.top = '-5%';
+            setTimeout(function() { el.style.opacity = '0'; }, 6000);
+        }, 8000 + delay);
+    })(particle, Math.random() * 5000);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convention Crowd — Sonar</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0a0a0c;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+
+        /* Overlay text */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #phase-text {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 22px;
+            color: #a0917d;
+            font-weight: 300;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            white-space: nowrap;
+        }
+        #phase-text.on {
+            opacity: 1;
+        }
+        #counter {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 14px;
+            color: #4a4035;
+            letter-spacing: 2px;
+        }
+        #prompt {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Roboto Mono', monospace;
+            font-size: 10px;
+            color: #3a3530;
+            letter-spacing: 2px;
+        }
+        .orange { color: #e67e22; font-weight: 700; }
+        .amber { color: #f39c12; font-weight: 600; }
+    </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="overlay">
+    <div id="counter"></div>
+    <div id="phase-text"></div>
+    <div id="prompt">CLICK TO ADVANCE</div>
+</div>
+
+<script>
+// ========== CONVENTION CROWD ANIMATION ==========
+// Simulates 200+ people at a convention. On final phase, one raises their hand
+// and gets highlighted with Sonar's orange glow.
+
+var canvas = document.getElementById('c');
+var ctx = canvas.getContext('2d');
+var W, H;
+var people = [];
+var phase = 0; // 0=gathering, 1=bustling, 2=one hand raised, 3=sonar highlight
+var phaseTime = 0;
+var TOTAL_PEOPLE = 220;
+var heroIndex = -1;
+var heroGlow = 0;
+var sonarRings = [];
+
+// Booth positions (convention floor layout)
+var booths = [];
+
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    if (booths.length === 0) initBooths();
+}
+
+function initBooths() {
+    booths = [];
+    // Create a grid of booths
+    var cols = 6, rows = 4;
+    var marginX = W * 0.1, marginY = H * 0.12;
+    var spacingX = (W - marginX * 2) / cols;
+    var spacingY = (H - marginY * 2) / rows;
+    for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+            if (Math.random() < 0.15) continue; // some empty spots
+            booths.push({
+                x: marginX + c * spacingX + spacingX * 0.5,
+                y: marginY + r * spacingY + spacingY * 0.5,
+                w: spacingX * 0.6,
+                h: spacingY * 0.35,
+                color: ['#1a1815','#1c1916','#181614','#1d1a17'][Math.floor(Math.random()*4)],
+                border: ['rgba(230,126,34,0.08)','rgba(243,156,18,0.06)','rgba(160,145,125,0.08)'][Math.floor(Math.random()*3)]
+            });
+        }
+    }
+}
+
+function initPeople() {
+    people = [];
+    for (var i = 0; i < TOTAL_PEOPLE; i++) {
+        var b = booths[Math.floor(Math.random() * booths.length)];
+        var tx = b.x + (Math.random() - 0.5) * b.w * 2.5;
+        var ty = b.y + (Math.random() - 0.5) * b.h * 4;
+        people.push({
+            x: W * 0.5 + (Math.random() - 0.5) * W * 0.3,
+            y: H + 50 + Math.random() * 200,
+            tx: tx,
+            ty: ty,
+            vx: 0,
+            vy: 0,
+            radius: 3 + Math.random() * 2.5,
+            color: getPersonColor(),
+            speed: 0.5 + Math.random() * 1.5,
+            wanderAngle: Math.random() * Math.PI * 2,
+            wanderSpeed: 0.2 + Math.random() * 0.6,
+            arrived: false,
+            handRaised: false,
+            handHeight: 0,
+            headBob: Math.random() * Math.PI * 2,
+            delay: i * 15 + Math.random() * 300 // staggered entrance
+        });
+    }
+    // Pick the hero
+    heroIndex = Math.floor(TOTAL_PEOPLE * 0.55);
+    people[heroIndex].tx = W * 0.5 + (Math.random() - 0.5) * 80;
+    people[heroIndex].ty = H * 0.45 + (Math.random() - 0.5) * 40;
+}
+
+function getPersonColor() {
+    var colors = [
+        '#8b7d6b','#9a8c7a','#7a6e5e','#6b5d4e','#a0917d',
+        '#b8a898','#635649','#847666','#978876','#aa9b8a'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+var startTime = 0;
+
+function update(t) {
+    if (!startTime) startTime = t;
+    var elapsed = t - startTime;
+    phaseTime += 16;
+
+    for (var i = 0; i < people.length; i++) {
+        var p = people[i];
+
+        // Staggered entrance
+        if (elapsed < p.delay) continue;
+
+        if (!p.arrived) {
+            // Move towards target
+            var dx = p.tx - p.x;
+            var dy = p.ty - p.y;
+            var dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist > 3) {
+                p.x += (dx / dist) * p.speed * 3;
+                p.y += (dy / dist) * p.speed * 3;
+            } else {
+                p.arrived = true;
+            }
+        } else {
+            // Wander around target
+            p.wanderAngle += (Math.random() - 0.5) * 0.15;
+            var wx = Math.cos(p.wanderAngle) * p.wanderSpeed;
+            var wy = Math.sin(p.wanderAngle) * p.wanderSpeed;
+
+            var dxT = p.tx - p.x;
+            var dyT = p.ty - p.y;
+            var distT = Math.sqrt(dxT * dxT + dyT * dyT);
+
+            // Stay near target
+            if (distT > 40) {
+                p.x += dxT * 0.02;
+                p.y += dyT * 0.02;
+            }
+            p.x += wx;
+            p.y += wy;
+        }
+
+        // Head bob
+        p.headBob += 0.03 + Math.random() * 0.01;
+
+        // Hand raise animation (phase 2+)
+        if (phase >= 2 && i === heroIndex) {
+            p.handRaised = true;
+            p.handHeight = Math.min(p.handHeight + 0.4, 18);
+        }
+    }
+
+    // Hero glow (phase 3)
+    if (phase >= 3) {
+        heroGlow = Math.min(heroGlow + 0.015, 1);
+        // Sonar rings
+        if (sonarRings.length < 5 && Math.random() < 0.02) {
+            sonarRings.push({ x: people[heroIndex].x, y: people[heroIndex].y, r: 5, alpha: 0.8 });
+        }
+        for (var s = sonarRings.length - 1; s >= 0; s--) {
+            sonarRings[s].r += 1.5;
+            sonarRings[s].alpha -= 0.005;
+            if (sonarRings[s].alpha <= 0) sonarRings.splice(s, 1);
+        }
+    }
+}
+
+function draw() {
+    ctx.fillStyle = '#0a0a0c';
+    ctx.fillRect(0, 0, W, H);
+
+    // Draw booths
+    for (var b = 0; b < booths.length; b++) {
+        var booth = booths[b];
+        ctx.fillStyle = booth.color;
+        ctx.strokeStyle = booth.border;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(booth.x - booth.w/2, booth.y - booth.h/2, booth.w, booth.h, 4);
+        ctx.fill();
+        ctx.stroke();
+    }
+
+    // Draw aisle lines (subtle)
+    ctx.strokeStyle = 'rgba(100,90,80,0.04)';
+    ctx.lineWidth = 1;
+    for (var ly = H * 0.15; ly < H * 0.85; ly += H * 0.22) {
+        ctx.beginPath();
+        ctx.moveTo(W * 0.05, ly);
+        ctx.lineTo(W * 0.95, ly);
+        ctx.stroke();
+    }
+
+    // Sonar rings (behind hero)
+    if (phase >= 3) {
+        for (var s = 0; s < sonarRings.length; s++) {
+            var ring = sonarRings[s];
+            ctx.strokeStyle = 'rgba(230,126,34,' + (ring.alpha * 0.5) + ')';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(ring.x, ring.y, ring.r, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+
+    // Draw people (sorted by y for depth)
+    var sorted = [];
+    for (var i = 0; i < people.length; i++) sorted.push(i);
+    sorted.sort(function(a, b) { return people[a].y - people[b].y; });
+
+    for (var si = 0; si < sorted.length; si++) {
+        var idx = sorted[si];
+        var p = people[idx];
+        if (p.y > H + 40) continue; // not yet on screen
+
+        var isHero = idx === heroIndex;
+        var bobY = Math.sin(p.headBob) * 1;
+
+        // Body (oval)
+        ctx.fillStyle = isHero && phase >= 3 ? '#e67e22' : p.color;
+        ctx.globalAlpha = isHero && phase >= 3 ? 0.9 + heroGlow * 0.1 : 0.7;
+
+        // Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y + p.radius + 2, p.radius * 1.2, p.radius * 0.4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Body
+        ctx.fillStyle = isHero && phase >= 3 ? '#e67e22' : p.color;
+        ctx.beginPath();
+        ctx.ellipse(p.x, p.y + bobY, p.radius * 0.9, p.radius * 1.3, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head
+        var headY = p.y - p.radius * 1.5 + bobY;
+        ctx.beginPath();
+        ctx.arc(p.x, headY, p.radius * 0.65, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Raised hand
+        if (p.handRaised && p.handHeight > 0) {
+            ctx.strokeStyle = isHero && phase >= 3 ? '#e67e22' : p.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(p.x + p.radius * 0.3, headY);
+            ctx.lineTo(p.x + p.radius * 0.5, headY - p.handHeight);
+            ctx.stroke();
+            // Hand circle
+            ctx.fillStyle = isHero && phase >= 3 ? '#f39c12' : p.color;
+            ctx.beginPath();
+            ctx.arc(p.x + p.radius * 0.5, headY - p.handHeight, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Hero glow
+        if (isHero && phase >= 3 && heroGlow > 0) {
+            var grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 50 + heroGlow * 40);
+            grad.addColorStop(0, 'rgba(230,126,34,' + (heroGlow * 0.35) + ')');
+            grad.addColorStop(0.5, 'rgba(243,156,18,' + (heroGlow * 0.1) + ')');
+            grad.addColorStop(1, 'rgba(230,126,34,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 50 + heroGlow * 40, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.globalAlpha = 1;
+    }
+
+    // Phase text updates
+    updatePhaseText();
+}
+
+function updatePhaseText() {
+    var el = document.getElementById('phase-text');
+    var counter = document.getElementById('counter');
+
+    var arrivedCount = 0;
+    for (var i = 0; i < people.length; i++) {
+        if (people[i].arrived || people[i].y < H) arrivedCount++;
+    }
+    counter.textContent = arrivedCount + ' / ' + TOTAL_PEOPLE + ' attendees';
+
+    if (phase === 0) {
+        el.innerHTML = 'Hundreds of attendees flood the convention floor...';
+        el.className = 'on';
+    } else if (phase === 1) {
+        el.innerHTML = 'Everyone is <span class="amber">walking</span>, <span class="amber">browsing</span>, <span class="amber">searching</span>...';
+        el.className = 'on';
+    } else if (phase === 2) {
+        el.innerHTML = 'But <span class="orange">one vendor</span> just matched with <span class="orange">exactly the right attendee.</span>';
+        el.className = 'on';
+    } else if (phase === 3) {
+        el.innerHTML = 'Sonar found them. <span class="orange" style="font-size:26px">Not by chance — by design.</span>';
+        el.className = 'on';
+    }
+}
+
+function loop(t) {
+    update(t);
+    draw();
+    requestAnimationFrame(loop);
+}
+
+// Advance phase on click
+document.body.addEventListener('click', function() {
+    if (phase < 3) {
+        phase++;
+        phaseTime = 0;
+        if (phase === 3) {
+            document.getElementById('prompt').textContent = '— SONAR CONVENTIONS —';
+            document.getElementById('prompt').style.color = '#e67e22';
+        }
+    }
+});
+
+// Also advance with keyboard
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        document.body.click();
+    }
+});
+
+window.addEventListener('resize', resize);
+resize();
+initPeople();
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>

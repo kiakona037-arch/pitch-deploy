@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTLB Digital Layer — Convention to City</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono:wght@400;700&display=swap');
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0c; width:100vw; height:100vh; overflow:hidden; font-family:'Inter',sans-serif; color:#e6e0d8; }
+
+.map-container {
+    position:relative; width:100%; height:100%;
+    background:radial-gradient(ellipse at 50% 50%, rgba(20,18,15,1) 0%, #0a0a0c 70%);
+}
+
+.street { position:absolute; background:rgba(230,126,34,0.12); z-index:1; }
+.street.h { height:2px; }
+.street.v { width:2px; }
+.street.major { background:rgba(230,126,34,0.22); }
+.street.major.h { height:3px; }
+.street.major.v { width:3px; }
+
+.street-label {
+    position:absolute; font-family:'Roboto Mono',monospace; font-size:8px;
+    color:rgba(160,145,125,0.35); letter-spacing:1px; text-transform:uppercase; white-space:nowrap; z-index:2;
+}
+
+.lbcc {
+    position:absolute; width:220px; height:130px; top:38%; left:42%;
+    transform:translate(-50%,-50%);
+    background:rgba(230,126,34,0.06); border:2px solid rgba(230,126,34,0.25);
+    border-radius:6px; z-index:5;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+}
+.lbcc-label { font-family:'Roboto Mono',monospace; font-size:14px; font-weight:800; color:#e67e22; letter-spacing:3px; }
+.lbcc-sub { font-size:9px; color:rgba(230,126,34,0.5); letter-spacing:2px; margin-top:4px; }
+
+.expand-ring {
+    position:absolute; top:38%; left:42%; transform:translate(-50%,-50%);
+    border-radius:50%; border:2px solid rgba(230,126,34,0.3);
+    opacity:0; z-index:3; pointer-events:none;
+}
+
+.venue-pin {
+    position:absolute; z-index:8; opacity:0; transform:scale(0);
+    transition:opacity 0.6s ease, transform 0.6s cubic-bezier(0.34,1.56,0.64,1);
+}
+.venue-pin.on { opacity:1; transform:scale(1); }
+
+.pin-dot { width:14px; height:14px; border-radius:50%; position:relative; }
+.pin-dot .pulse {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:100%; height:100%; border-radius:50%; border:1px solid;
+    animation:venuePulse 2.5s ease-out infinite;
+}
+@keyframes venuePulse { 0%{width:100%;height:100%;opacity:0.8} 100%{width:300%;height:300%;opacity:0} }
+
+.pin-label {
+    position:absolute; top:-28px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-family:'Roboto Mono',monospace; font-size:9px; font-weight:600; letter-spacing:0.5px;
+    padding:3px 8px; border-radius:4px; background:rgba(10,10,12,0.85); border:1px solid rgba(100,90,75,0.2);
+}
+.pin-type {
+    position:absolute; top:18px; left:50%; transform:translateX(-50%); white-space:nowrap;
+    font-size:7px; font-family:'Roboto Mono',monospace; letter-spacing:1px;
+    text-transform:uppercase; opacity:0.6;
+}
+
+/* Venue categories */
+.cat-restaurant .pin-dot { background:#34d399; box-shadow:0 0 10px rgba(52,211,153,0.5); }
+.cat-restaurant .pin-dot .pulse { border-color:rgba(52,211,153,0.4); }
+.cat-restaurant .pin-label { color:#34d399; border-color:rgba(52,211,153,0.2); }
+.cat-restaurant .pin-type { color:rgba(52,211,153,0.5); }
+
+.cat-bar .pin-dot { background:#a78bfa; box-shadow:0 0 10px rgba(167,139,250,0.5); }
+.cat-bar .pin-dot .pulse { border-color:rgba(167,139,250,0.4); }
+.cat-bar .pin-label { color:#a78bfa; border-color:rgba(167,139,250,0.2); }
+.cat-bar .pin-type { color:rgba(167,139,250,0.5); }
+
+.cat-shop .pin-dot { background:#38bdf8; box-shadow:0 0 10px rgba(56,189,248,0.5); }
+.cat-shop .pin-dot .pulse { border-color:rgba(56,189,248,0.4); }
+.cat-shop .pin-label { color:#38bdf8; border-color:rgba(56,189,248,0.2); }
+.cat-shop .pin-type { color:rgba(56,189,248,0.5); }
+
+.cat-venue .pin-dot { background:#f472b6; box-shadow:0 0 10px rgba(244,114,182,0.5); }
+.cat-venue .pin-dot .pulse { border-color:rgba(244,114,182,0.4); }
+.cat-venue .pin-label { color:#f472b6; border-color:rgba(244,114,182,0.2); }
+.cat-venue .pin-type { color:rgba(244,114,182,0.5); }
+
+.cat-hotel .pin-dot { background:#fbbf24; box-shadow:0 0 10px rgba(251,191,36,0.5); }
+.cat-hotel .pin-dot .pulse { border-color:rgba(251,191,36,0.4); }
+.cat-hotel .pin-label { color:#fbbf24; border-color:rgba(251,191,36,0.2); }
+.cat-hotel .pin-type { color:rgba(251,191,36,0.5); }
+
+/* ===== FLARE SIGNALS ===== */
+.flare {
+    position:absolute; z-index:7; pointer-events:none; opacity:0;
+}
+.flare.on { opacity:1; }
+.flare-ring {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    border-radius:50%; border:2px solid;
+    animation:flareExpand 2s ease-out infinite;
+}
+.flare-ring.r2 { animation-delay:0.6s; }
+.flare-ring.r3 { animation-delay:1.2s; }
+@keyframes flareExpand {
+    0% { width:20px; height:20px; opacity:0.9; }
+    100% { width:120px; height:120px; opacity:0; }
+}
+.flare-glow {
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width:40px; height:40px; border-radius:50%;
+    animation:flareGlow 1.5s ease-in-out infinite alternate;
+}
+@keyframes flareGlow {
+    0% { transform:translate(-50%,-50%) scale(0.8); opacity:0.4; }
+    100% { transform:translate(-50%,-50%) scale(1.2); opacity:0.8; }
+}
+
+/* ===== USER DOTS ===== */
+.user-dot {
+    position:absolute; width:6px; height:6px; border-radius:50%;
+    background:#e67e22; box-shadow:0 0 8px rgba(230,126,34,0.6);
+    z-index:6; pointer-events:none; opacity:0;
+}
+
+/* Mode switch */
+.mode-switch {
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    z-index:100; text-align:center; opacity:0; transition:opacity 0.8s ease; pointer-events:none;
+}
+.mode-switch.on { opacity:1; }
+.mode-label { font-family:'Roboto Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; margin-bottom:8px; }
+.mode-title { font-size:36px; font-weight:900; line-height:1.2; }
+.mode-sub { font-size:14px; color:rgba(200,185,165,0.6); margin-top:8px; font-weight:300; }
+
+/* HUD */
+.hud-tag {
+    position:fixed; top:40px; left:60px; font-family:'Roboto Mono',monospace;
+    font-size:12px; letter-spacing:3px; color:rgba(200,185,165,0.7);
+    text-transform:uppercase; z-index:50; font-weight:600; opacity:0; transition:opacity 0.8s ease;
+}
+.hud-tag.on { opacity:1; }
+
+.legend {
+    position:fixed; bottom:40px; right:50px; display:flex; flex-direction:column; gap:8px;
+    z-index:50; opacity:0; transition:opacity 0.8s ease;
+}
+.legend.on { opacity:1; }
+.legend-item { display:flex; align-items:center; gap:8px; font-family:'Roboto Mono',monospace; font-size:11px; font-weight:600; }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+
+.rev-block {
+    position:fixed; bottom:40px; left:60px; z-index:50; opacity:0;
+    transition:opacity 0.8s ease; font-family:'Roboto Mono',monospace;
+}
+.rev-block.on { opacity:1; }
+
+.user-count {
+    position:fixed; top:40px; right:60px; z-index:50; opacity:0;
+    transition:opacity 0.8s ease; font-family:'Roboto Mono',monospace; text-align:right;
+}
+.user-count.on { opacity:1; }
+</style>
+</head>
+<body>
+
+<div class="hud-tag" id="hudTag">SONAR CONVENTIONS // BEYOND THE FLOOR</div>
+
+<div class="mode-switch" id="modeSwitch">
+    <div class="mode-label" style="color:rgba(230,126,34,0.6)">MODE SWITCH</div>
+    <div class="mode-title">
+        <span style="color:#e67e22">Convention</span> → <span style="color:#34d399">Social</span>
+    </div>
+    <div class="mode-sub">"The app doesn't stop at the convention door."</div>
+</div>
+
+<div class="user-count" id="userCount">
+    <div style="font-size:9px;color:rgba(200,185,165,0.4);letter-spacing:2px;text-transform:uppercase">Active Users in DTLB</div>
+    <div id="userNum" style="font-size:36px;font-weight:900;color:#34d399;text-shadow:0 0 15px rgba(52,211,153,0.3)">0</div>
+</div>
+
+<div class="legend" id="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#e67e22"></div><span style="color:#e67e22">Convention Center</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div><span style="color:#34d399">Restaurants</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div><span style="color:#a78bfa">Bars & Nightlife</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#38bdf8"></div><span style="color:#38bdf8">Shops & Retail</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f472b6"></div><span style="color:#f472b6">Event Venues</span></div>
+    <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div><span style="color:#fbbf24">Hotels</span></div>
+</div>
+
+<div class="rev-block" id="revBlock">
+    <div style="font-size:9px;color:rgba(200,185,165,0.4);letter-spacing:2px;text-transform:uppercase">Extended Digital Revenue</div>
+    <div style="font-size:10px;color:rgba(200,185,165,0.35);margin-top:3px">Convention Floor + DTLB Corridor</div>
+    <div id="revVal" style="font-size:32px;font-weight:900;color:#f39c12;text-shadow:0 0 15px rgba(243,156,18,0.3);margin-top:6px">$0</div>
+    <div style="font-size:9px;color:rgba(200,185,165,0.35);margin-top:4px">$127,400 floor + $38,200 DTLB partners</div>
+</div>
+
+<div class="map-container" id="map">
+    <div class="lbcc" id="lbcc">
+        <div class="lbcc-label">LBCC</div>
+        <div class="lbcc-sub">CONVENTION CENTER</div>
+    </div>
+
+    <!-- Streets -->
+    <div class="street h major" style="top:52%; left:10%; width:80%"></div>
+    <div class="street-label" style="top:53%; left:12%">Ocean Blvd</div>
+    <div class="street h" style="top:46%; left:20%; width:60%"></div>
+    <div class="street-label" style="top:47%; left:22%">Seaside Way</div>
+    <div class="street h major" style="top:28%; left:10%; width:80%"></div>
+    <div class="street-label" style="top:29%; left:12%">Broadway</div>
+    <div class="street h" style="top:20%; left:15%; width:70%"></div>
+    <div class="street-label" style="top:21%; left:17%">3rd Street</div>
+    <div class="street v major" style="left:42%; top:10%; height:80%"></div>
+    <div class="street-label" style="left:43.5%; top:12%; transform:rotate(90deg); transform-origin:left">Pine Ave</div>
+    <div class="street v major" style="left:55%; top:10%; height:80%"></div>
+    <div class="street-label" style="left:56.5%; top:12%; transform:rotate(90deg); transform-origin:left">Long Beach Blvd</div>
+    <div class="street v" style="left:30%; top:15%; height:70%"></div>
+    <div class="street-label" style="left:31.5%; top:15%; transform:rotate(90deg); transform-origin:left">Pacific Ave</div>
+    <div class="street v" style="left:68%; top:15%; height:70%"></div>
+    <div class="street-label" style="left:69.5%; top:17%; transform:rotate(90deg); transform-origin:left">Magnolia Ave</div>
+    <div class="street h" style="top:65%; left:15%; width:70%"></div>
+    <div class="street-label" style="top:66%; left:17%">Shoreline Dr</div>
+
+    <!-- Expanding digital rings -->
+    <div class="expand-ring" id="ring1" style="width:260px;height:260px;"></div>
+    <div class="expand-ring" id="ring2" style="width:450px;height:450px;"></div>
+    <div class="expand-ring" id="ring3" style="width:700px;height:700px;"></div>
+    <div class="expand-ring" id="ring4" style="width:950px;height:950px;border-style:dashed;"></div>
+</div>
+
+<script>
+// Color map for categories
+var catColors = {
+    restaurant:'52,211,153', bar:'167,139,250', shop:'56,189,248',
+    venue:'244,114,182', hotel:'251,191,36'
+};
+
+var venues = [
+    { name:"George's Greek", cat:'restaurant', top:26, left:41 },
+    { name:"Roscoe's", cat:'restaurant', top:30, left:38 },
+    { name:"Lola's Mexican", cat:'restaurant', top:24, left:46 },
+    { name:'The Ordinarie', cat:'restaurant', top:19, left:42 },
+    { name:'Restauration', cat:'restaurant', top:22, left:54 },
+    { name:'555 East', cat:'restaurant', top:34, left:34 },
+    { name:'The Pike Bar', cat:'bar', top:52, left:35 },
+    { name:"Harvelle's", cat:'bar', top:28, left:50 },
+    { name:'The Federal', cat:'bar', top:26, left:56 },
+    { name:'Beachwood BBQ', cat:'bar', top:20, left:52 },
+    { name:'The Pike Outlets', cat:'shop', top:55, left:38 },
+    { name:'Shoreline Village', cat:'shop', top:68, left:44 },
+    { name:'City Place', cat:'shop', top:22, left:62 },
+    { name:'The Cove', cat:'venue', top:58, left:52 },
+    { name:'Rooftop Bar MADE', cat:'venue', top:32, left:60 },
+    { name:'The Reef', cat:'venue', top:62, left:58 },
+    { name:'Hyatt Regency', cat:'hotel', top:48, left:56 },
+    { name:'Renaissance', cat:'hotel', top:50, left:30 },
+    { name:'Westin', cat:'hotel', top:44, left:62 },
+    { name:'Hotel Maya', cat:'hotel', top:60, left:28 },
+];
+
+var mapEl = document.getElementById('map');
+var pinEls = [];
+var flareEls = [];
+
+// Create venue pins AND flare signals
+venues.forEach(function(v, idx) {
+    // Pin
+    var pin = document.createElement('div');
+    pin.className = 'venue-pin cat-' + v.cat;
+    pin.style.top = v.top + '%';
+    pin.style.left = v.left + '%';
+    pin.innerHTML =
+        '<div class="pin-dot"><div class="pulse"></div></div>' +
+        '<div class="pin-label">' + v.name + '</div>' +
+        '<div class="pin-type">' + v.cat + '</div>';
+    mapEl.appendChild(pin);
+    pinEls.push(pin);
+
+    // Flare signal
+    var rgb = catColors[v.cat];
+    var flare = document.createElement('div');
+    flare.className = 'flare';
+    flare.style.top = v.top + '%';
+    flare.style.left = v.left + '%';
+    flare.innerHTML =
+        '<div class="flare-glow" style="background:radial-gradient(circle,rgba(' + rgb + ',0.4),transparent 70%)"></div>' +
+        '<div class="flare-ring" style="border-color:rgba(' + rgb + ',0.5)"></div>' +
+        '<div class="flare-ring r2" style="border-color:rgba(' + rgb + ',0.3)"></div>' +
+        '<div class="flare-ring r3" style="border-color:rgba(' + rgb + ',0.15)"></div>';
+    mapEl.appendChild(flare);
+    flareEls.push(flare);
+});
+
+// LBCC center position (percentage)
+var lbccTop = 38, lbccLeft = 42;
+
+// Spawn a user dot that travels from LBCC to a venue
+function spawnUserDot(venueIdx) {
+    var v = venues[venueIdx];
+    var rgb = catColors[v.cat];
+    var dot = document.createElement('div');
+    dot.className = 'user-dot';
+    // Random spawn point at LBCC edge
+    var offsetX = (Math.random() - 0.5) * 8;
+    var offsetY = (Math.random() - 0.5) * 5;
+    dot.style.left = (lbccLeft + offsetX) + '%';
+    dot.style.top = (lbccTop + offsetY) + '%';
+    dot.style.background = 'rgb(' + rgb + ')';
+    dot.style.boxShadow = '0 0 8px rgba(' + rgb + ',0.6)';
+    mapEl.appendChild(dot);
+
+    // Animate: fade in, travel to venue, fade out
+    var duration = 1500 + Math.random() * 2000;
+    dot.style.transition = 'left ' + duration + 'ms ease-in-out, top ' + duration + 'ms ease-in-out, opacity 0.4s ease';
+    
+    // Small random offset at destination
+    var destOffX = (Math.random() - 0.5) * 2;
+    var destOffY = (Math.random() - 0.5) * 2;
+
+    requestAnimationFrame(function() {
+        dot.style.opacity = '0.9';
+        requestAnimationFrame(function() {
+            dot.style.left = (v.left + destOffX) + '%';
+            dot.style.top = (v.top + destOffY) + '%';
+        });
+    });
+
+    // Remove after arrival
+    setTimeout(function() {
+        dot.style.opacity = '0';
+        setTimeout(function() { dot.remove(); }, 500);
+    }, duration + 200);
+}
+
+// Continuously spawn dots to random venues
+var dotSpawnerInterval;
+function startDotFlow() {
+    dotSpawnerInterval = setInterval(function() {
+        var idx = Math.floor(Math.random() * venues.length);
+        spawnUserDot(idx);
+    }, 250);
+}
+
+// ===== ANIMATION TIMELINE =====
+var hudTag = document.getElementById('hudTag');
+var modeSwitch = document.getElementById('modeSwitch');
+var legendEl = document.getElementById('legend');
+var revBlock = document.getElementById('revBlock');
+var userCountEl = document.getElementById('userCount');
+var lbcc = document.getElementById('lbcc');
+
+// Phase 1: LBCC glow (0-2s)
+setTimeout(function() {
+    hudTag.classList.add('on');
+    lbcc.style.transition = 'all 1s ease';
+    lbcc.style.boxShadow = '0 0 40px rgba(230,126,34,0.3), inset 0 0 30px rgba(230,126,34,0.1)';
+    lbcc.style.borderColor = 'rgba(230,126,34,0.5)';
+}, 500);
+
+// Phase 2: Mode switch (2-5s)
+setTimeout(function() { modeSwitch.classList.add('on'); }, 2000);
+setTimeout(function() { modeSwitch.classList.remove('on'); }, 5000);
+
+// Phase 3: Expanding rings (5-8s)
+var ringData = [
+    { el:document.getElementById('ring1'), delay:5000, color:'rgba(230,126,34,0.35)' },
+    { el:document.getElementById('ring2'), delay:5800, color:'rgba(230,126,34,0.25)' },
+    { el:document.getElementById('ring3'), delay:6600, color:'rgba(230,126,34,0.15)' },
+    { el:document.getElementById('ring4'), delay:7400, color:'rgba(230,126,34,0.08)' },
+];
+var ringStyle = document.createElement('style');
+ringStyle.textContent = '@keyframes ringExpand{0%{transform:translate(-50%,-50%) scale(0.95);opacity:0.8}50%{transform:translate(-50%,-50%) scale(1.02);opacity:0.4}100%{transform:translate(-50%,-50%) scale(0.95);opacity:0.8}}';
+document.head.appendChild(ringStyle);
+
+ringData.forEach(function(r) {
+    setTimeout(function() {
+        r.el.style.transition = 'opacity 1.2s ease';
+        r.el.style.opacity = '1';
+        r.el.style.borderColor = r.color;
+        r.el.style.animation = 'ringExpand 3s ease-out infinite';
+    }, r.delay);
+});
+
+// Phase 4: Venue pins appear (7-11s)
+var nearVenues = [0,1,5,10,17];
+var midVenues = [2,3,6,7,11,13,14,18];
+var farVenues = [4,8,9,12,15,16,19];
+
+setTimeout(function() {
+    nearVenues.forEach(function(idx, i) {
+        setTimeout(function() { pinEls[idx].classList.add('on'); }, i * 200);
+    });
+}, 7000);
+setTimeout(function() {
+    midVenues.forEach(function(idx, i) {
+        setTimeout(function() { pinEls[idx].classList.add('on'); }, i * 150);
+    });
+}, 8500);
+setTimeout(function() {
+    farVenues.forEach(function(idx, i) {
+        setTimeout(function() { pinEls[idx].classList.add('on'); }, i * 150);
+    });
+}, 10000);
+
+// Phase 5: Flare signals activate (11s) — venues start "calling" for users
+setTimeout(function() {
+    flareEls.forEach(function(flare, i) {
+        setTimeout(function() {
+            flare.classList.add('on');
+        }, i * 100);
+    });
+}, 11000);
+
+// Phase 6: User dots start flowing from LBCC to venues (12s)
+setTimeout(function() {
+    startDotFlow();
+}, 12500);
+
+// Phase 7: Legend + user count (13s)
+setTimeout(function() {
+    legendEl.classList.add('on');
+    userCountEl.classList.add('on');
+
+    var targetUsers = 2847;
+    var currentUsers = 0;
+    var step = Math.ceil(targetUsers / 50);
+    var interval = setInterval(function() {
+        currentUsers += step;
+        if (currentUsers >= targetUsers) { currentUsers = targetUsers; clearInterval(interval); }
+        document.getElementById('userNum').textContent = currentUsers.toLocaleString();
+    }, 40);
+}, 13000);
+
+// Phase 8: Revenue (15s)
+setTimeout(function() {
+    revBlock.classList.add('on');
+    var targetRev = 165600;
+    var currentRev = 0;
+    var step = Math.ceil(targetRev / 60);
+    var interval = setInterval(function() {
+        currentRev += step;
+        if (currentRev >= targetRev) { currentRev = targetRev; clearInterval(interval); }
+        document.getElementById('revVal').textContent = '$' + currentRev.toLocaleString();
+    }, 30);
+}, 15000);
+</script>
+</body>
+</html>
