@@ -1,54 +1,73 @@
 {
-  "_comment": "Seedance 2.0 (fal.ai) shot list. Replace PLACEHOLDER prompts + REPLACE_* image URLs with the strategist's video plan. aspect_ratio 9:16 = phone slots, 16:9 = hero/deck/sizzle. image_url/end_image_url/image_urls must be PUBLIC URLs (host stills on Firebase first). Dry-run: `node scripts/gen_seedance_videos.mjs`.",
+  "_comment": "Seedance 2.0 (fal.ai) shot list — strategist plan wired in. image_url/end_image_url/image_urls must be PUBLIC URLs (host the app-screen stills on Firebase first; replace every REPLACE_* token). Stills needed: S1 social-map, S2 social-profile-sheet, S3 live-map-night, S5 live-perk-redeemed, S6 events-booth-map, S7 events-DRW-reply, S8 events-vendor-card. HERO (id=hero-plate) needs NO stills and can run immediately. Dry-run: `node scripts/gen_seedance_videos.mjs`.",
   "defaults": { "resolution": "720p", "fast": false },
   "shots": [
     {
-      "id": "hero-loop",
-      "placement": "hero",
-      "endpoint": "text-to-video",
-      "aspect_ratio": "16:9",
-      "duration": "6",
-      "generate_audio": false,
-      "prompt": "PLACEHOLDER - ambient hero: a dark city map at night seen from above, a sonar ping ripples outward, glowing dots awaken across the street grid, subtle cinematic motion, teal/orange/magenta accents, no text."
-    },
-    {
-      "id": "events-slot",
-      "placement": "events",
-      "endpoint": "image-to-video",
-      "aspect_ratio": "9:16",
-      "duration": "5",
-      "generate_audio": false,
-      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
-      "prompt": "PLACEHOLDER - person on a busy expo floor glances at their phone, a live map glows on screen, they smile and walk toward a booth. Natural handheld motion."
-    },
-    {
       "id": "social-slot",
+      "title": "SOCIAL — tap-to-reveal (S1 -> S2)",
       "placement": "social",
       "endpoint": "image-to-video",
       "aspect_ratio": "9:16",
-      "duration": "5",
+      "duration": "8",
       "generate_audio": false,
-      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
-      "prompt": "PLACEHOLDER - bright coffee shop, phone shows a nearby-person card, a tap reveals a profile, warm natural light, relaxed pacing."
+      "image_url": "REPLACE_S1_social_map_publicURL",
+      "end_image_url": "REPLACE_S2_social_profile_sheet_publicURL",
+      "prompt": "Cinematic vertical shot of a phone showing a clean dark map UI (warm near-black #0a0a0c) with a few labeled venue cards and the user's own marker — no scattered dots, no radar. Slow push-in. At 2s a fingertip taps a venue card; a frosted bottom sheet rises and interest-tagged profile cards fade in one by one. Soft cyan (#22d3ee) accent glow, bone-white text, premium minimal UI, crisp and legible, dusk mood. Leave top third clear for a caption."
+    },
+    {
+      "id": "hero-plate",
+      "title": "HERO — 'your city' atmosphere plate (NO UI)",
+      "placement": "hero",
+      "endpoint": "text-to-video",
+      "aspect_ratio": "16:9",
+      "duration": "7",
+      "generate_audio": false,
+      "note": "Full-bleed loop behind the page's CSS radar overlay. No stills needed — can generate as soon as FAL_KEY is set.",
+      "prompt": "Slow cinematic aerial drift over Long Beach at blue-hour dusk — harbor, the Queen Mary silhouette, low warm city lights coming on, gentle haze. Warm near-black grade, deep shadows, faint amber glow on the horizon. Calm, premium, hopeful. Seamless loop, minimal motion, no text, no UI, no map graphics."
     },
     {
       "id": "live-slot",
+      "title": "LIVE — Swag Bag / LB$ (S3 -> [S4] -> S5)",
       "placement": "live",
       "endpoint": "image-to-video",
       "aspect_ratio": "9:16",
-      "duration": "5",
+      "duration": "8",
       "generate_audio": false,
-      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
-      "prompt": "PLACEHOLDER - night bar, a Swag Bag perk card pops up on the phone (line-skip, LB$), neon magenta glow, energetic motion."
+      "note": "3-state storyboard compressed to start(S3)->end(S5); middle Swag-Bag beat (S4) is prompt-driven. If the mid beat is unfaithful, switch this shot to reference-to-video with [S3,S4,S5].",
+      "image_url": "REPLACE_S3_live_map_night_publicURL",
+      "end_image_url": "REPLACE_S5_live_perk_redeemed_publicURL",
+      "prompt": "Vertical shot, phone in hand, downtown Long Beach neon bokeh on the glass at night. Screen shows a clean dark map UI with venue markers — no dots, no radar. At 2s a reward card slides in with a soft shimmer; at 4s it transitions to a Swag Bag with a glowing perk card and a rising credit balance; at 6s a thumb taps confirm and it flips to redeemed with a small magenta (#d957f7) particle burst. Warm-dark grade, bone text, aspirational nightlife, legible UI."
+    },
+    {
+      "id": "events-slot",
+      "title": "EVENTS — Ask DRW (S6 -> [S7] -> S8)",
+      "placement": "events",
+      "endpoint": "image-to-video",
+      "aspect_ratio": "9:16",
+      "duration": "9",
+      "generate_audio": false,
+      "note": "3-state storyboard compressed to start(S6)->end(S8); middle DRW-reply beat (S7) is prompt-driven. If unfaithful, switch to reference-to-video with [S6,S7,S8]. DRW is intent/keyword-based — booths/skills, never 'find the person who looks like...'.",
+      "image_url": "REPLACE_S6_events_booth_map_publicURL",
+      "end_image_url": "REPLACE_S8_events_vendor_card_publicURL",
+      "prompt": "Vertical over-the-shoulder shot, person holding a phone on a bright convention expo floor, booths softly blurred behind, Long Beach convention center daylight. Screen shows a clean dark map of booth markers with an orange (#f97316) accent — no dots, no radar. At 2s a concierge panel slides up, a short text query types in, an AI reply appears; at 4s a booth marker pulses orange; at 6s a thumb taps it and a vendor card expands. Confident, modern, daytime B2B energy, warm-dark UI, legible."
     },
     {
       "id": "sizzle",
+      "title": "SIZZLE — brand film, multi-shot, native audio",
       "placement": "deck",
-      "endpoint": "text-to-video",
+      "endpoint": "reference-to-video",
       "aspect_ratio": "16:9",
       "duration": "15",
       "generate_audio": true,
-      "prompt": "PLACEHOLDER multi-shot - At 0s: sunrise over Long Beach, an expo floor wakes up. Cut scene to: people connecting on the floor, a digital handshake. Cut scene to: afternoon coffee networking, a tap-to-connect. Cut scene to: night, neon bars, a perk drops to a phone. End on a glowing sonar radar logo. Upbeat cinematic music, ambient crowd."
+      "note": "@Image1=S6 orange booth map, @Image2=S7 DRW reply, @Image3=S1 cyan map, @Image4=S2 profile sheet, @Image5=S5 perk redeeming. Reuses the same stills as the mode slots.",
+      "image_urls": [
+        "REPLACE_S6_events_booth_map_publicURL",
+        "REPLACE_S7_events_drw_reply_publicURL",
+        "REPLACE_S1_social_map_publicURL",
+        "REPLACE_S2_social_profile_sheet_publicURL",
+        "REPLACE_S5_live_perk_redeemed_publicURL"
+      ],
+      "prompt": "15s cinematic brand film, 16:9, warm near-black grade throughout. Open on a slow aerial of Long Beach at sunrise, soft amber. Cut to a bright expo floor — a phone showing @Image1 (orange booth map) then @Image2 (DRW answering). At 5s cut to a venue at dusk — a phone showing @Image3 (cyan map, clean markers, no dots) tapped to reveal @Image4 (a profile sheet rising). At 9s cut to downtown Long Beach at night, neon bokeh — a phone showing @Image5 (a perk redeeming, magenta). At 13s end on a calm dark field with clean negative space for a logo. Cohesive sunrise to night color story, premium, minimal, no on-screen text, no dots, no radar graphics. Audio: one continuous bed evolving dawn-ambient to day-optimistic to dusk-warm to night-pulse, UI SFX on each tap/confirm, final whoosh. Optional brand VO: 'Your city, live.' (open) / 'Sonar. Now in beta.' (close). No fake-spokesperson lip-sync."
     }
   ]
 }
