@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonar Conventions - Full Pitch Deck</title>
+    <!-- Preload fonts for faster rendering (replaces render-blocking @import) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            background: #0a0a0c;
+            color: #e6e0d8;
+            font-family: 'Inter', sans-serif;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            padding: 50px 70px;
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: opacity;
+            transform: translateZ(0)
+        }
+
+        .slide.active {
+            display: flex;
+            opacity: 1
+        }
+
+        .tag {
+            font-family: 'Roboto Mono', monospace;
+            font-size:18px;
+            color: #c8a570;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px
+        }
+
+        .tag {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 70px
+        }
+
+        h1 {
+            font-size:62px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 8px
+        }
+
+        h2 {
+            font-size:44px;
+            font-weight: 700;
+            margin-bottom: 6px
+        }
+
+        .sub {
+            font-size:28px;
+            color: #ddd0bf;
+            font-weight: 300;
+            max-width: 550px;
+            line-height: 1.5
+        }
+
+        .card {
+            background: #13110f;
+            border: 1px solid rgba(230, 126, 34, 0.15);
+            border-radius: 10px;
+            padding: 22px 18px;
+            position: relative;
+            overflow: hidden
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #e74c3c, #e67e22)
+        }
+
+        .ct {
+            font-size:24px;
+            font-weight: 700;
+            color: #e67e22;
+            margin-bottom: 4px
+        }
+
+        .cb {
+            font-size:20px;
+            color: #d4c4b0;
+            line-height: 1.5
+        }
+
+        .anim {
+            opacity: 0;
+            transform: translateY(20px) translateZ(0);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+            backface-visibility: hidden
+        }
+
+        .anim.on {
+            opacity: 1;
+            transform: translateY(0) translateZ(0)
+        }
+
+        .nav {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Roboto Mono', monospace;
+            font-size:16px;
+            color: #3a3530;
+            letter-spacing: 2px;
+            z-index: 100
+        }
+
+        .slide-num {
+            position: fixed;
+            bottom: 12px;
+            right: 30px;
+            font-family: 'Roboto Mono', monospace;
+            font-size:18px;
+            color: #4a4035;
+            z-index: 100
+        }
+
+        .orange {
+            color: #e67e22
+        }
+
+        .red {
+            color: #e74c3c
+        }
+
+        .amber {
+            color: #f39c12
+        }
+
+        .teal {
+            color: #34d399
+        }
+
+        .dim {
+            color: #d4c4b0
+        }
+
+        .white {
+            color: #ece7e0
+        }
+
+        .bold {
+            font-weight: 700
+        }
+
+        .mono {
+            font-family: 'Roboto Mono', monospace
+        }
+
+        /* === SLIDE 1 STREAK ANIMATION === */
+        .s1-streak {
+            background: linear-gradient(90deg, #ece7e0 0%, #ece7e0 40%, #4cdd86 50%, #2bd4e1 55%, #ece7e0 60%, #ece7e0 100%);
+            background-size: 300% 100%;
+            background-position: 100% 0;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: streakSweep 2.5s ease-in-out 1.5s forwards;
+        }
+
+        @keyframes streakSweep {
+            0% {
+                background-position: 100% 0;
+            }
+
+            100% {
+                background-position: 0% 0;
+            }
+        }
+
+        /* ===== RESPONSIVE SCALING ===== */
+        /* Medium screens (smaller laptops, 15" at 1080p) */
+        @media (max-height: 850px) {
+            .slide .content {
+                transform: scale(0.85);
+                transform-origin: top center;
+            }
+        }
+
+        /* Small screens (13" laptops, 768p) */
+        @media (max-height: 700px) {
+            .slide .content {
+                transform: scale(0.7);
+                transform-origin: top center;
+            }
+        }
+
+        /* Very small */
+        @media (max-height: 550px) {
+            .slide .content {
+                transform: scale(0.55);
+                transform-origin: top center;
+            }
+        }
+
+        /* Mobile overlay */
+        #mobile-notice {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            background: linear-gradient(135deg, #0a0a0c 0%, #1a1510 50%, #0a0a0c 100%);
+            color: #fff;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media (max-width: 768px) {
+            #mobile-notice {
+                display: flex;
+            }
+
+            .slide,
+            .nav,
+            .slide-num {
+                display: none !important;
+            }
+        }
+    </style>
+
+    <style>
+        /* ===== PROJECTOR MODE (P key toggle) ===== */
+        /* === GLOBAL BASE — double all core text === */
+        body.projector-mode .tag { font-size:36px !important; letter-spacing:5px !important; margin-bottom:14px !important; }
+        body.projector-mode h1 { font-size:96px !important; margin-bottom:14px !important; }
+        body.projector-mode h2 { font-size:64px !important; margin-bottom:10px !important; }
+        body.projector-mode .sub { font-size:44px !important; max-width:900px !important; line-height:1.6 !important; }
+        body.projector-mode .ct { font-size:42px !important; margin-bottom:8px !important; }
+        body.projector-mode .cb { font-size:38px !important; line-height:1.7 !important; }
+        body.projector-mode .card { padding:32px 26px !important; }
+        body.projector-mode .mono { font-size:32px !important; }
+        body.projector-mode .dim { font-size:32px !important; }
+        body.projector-mode .bold { font-size:38px !important; }
+        body.projector-mode .nav { font-size:24px !important; }
+        body.projector-mode #snum { font-size:32px !important; }
+        /* Containers: more breathing room */
+        body.projector-mode .content { padding:60px 80px !important; }
+        body.projector-mode .slide { padding:60px 80px !important; }
+
+        /* === SLIDE 1 (Title) === */
+        body.projector-mode #s1 h1 { font-size:108px !important; }
+        body.projector-mode #s1 .sub { font-size:46px !important; }
+        body.projector-mode #s1 span[style*="font-size:36px"] { font-size:52px !important; }
+        body.projector-mode #s1 span[style*="font-size:19px"] { font-size:36px !important; }
+
+        /* === SLIDE 2 (Problem) === */
+        body.projector-mode #s2 h1 { font-size:96px !important; }
+        body.projector-mode #s2 .sub { font-size:46px !important; }
+        body.projector-mode #s2 .ct { font-size:44px !important; }
+        body.projector-mode #s2 .cb { font-size:38px !important; }
+        body.projector-mode #s2 div[style*="font-size:26px"] { font-size:42px !important; }
+
+        /* === SLIDE 3 (Solution / Digital Layer) === */
+        body.projector-mode #s3 h1 { font-size:96px !important; }
+        body.projector-mode #s3 .sub { font-size:44px !important; }
+        body.projector-mode #s3 .ct { font-size:42px !important; }
+        body.projector-mode #s3 .cb { font-size:38px !important; }
+        body.projector-mode #dreCompactStatus { font-size:36px !important; }
+        body.projector-mode #dreCompactCounter { font-size:58px !important; }
+
+        /* === SLIDE 4 (GTM / Business Model) === */
+        body.projector-mode #s4 h1 { font-size:84px !important; }
+        body.projector-mode #s4 .ct { font-size:42px !important; }
+        body.projector-mode #s4 .cb { font-size:36px !important; }
+        body.projector-mode #s4 div[style*="font-size:22px"] { font-size:38px !important; }
+        body.projector-mode #s4 div[style*="font-size:18px"] { font-size:32px !important; }
+        body.projector-mode #s4 div[style*="font-size:19px"] { font-size:32px !important; }
+        body.projector-mode #s4 div[style*="font-size:20px"] { font-size:36px !important; }
+        body.projector-mode #s4 .gtm-bar { height:14px !important; }
+        body.projector-mode #s4rev { font-size:36px !important; }
+
+        /* === SLIDE 5 (Market Opportunity / Donut Gram) === */
+        body.projector-mode #s5 h1 { font-size:86px !important; }
+        body.projector-mode #s5 div[style*="font-size:19px"] { font-size:36px !important; }
+        body.projector-mode #s5 div[style*="font-size:20px"] { font-size:36px !important; }
+        body.projector-mode #s5 div[style*="font-size:22px"] { font-size:38px !important; }
+        body.projector-mode #s5 div[style*="font-size:24px"] { font-size:40px !important; }
+        body.projector-mode #s5 div[style*="font-size:28px"] { font-size:44px !important; }
+        body.projector-mode #s5 div[style*="font-size:44px"] { font-size:64px !important; }
+        body.projector-mode #s5 div[style*="font-size:52px"] { font-size:68px !important; }
+        body.projector-mode .mo-donut-wrap { width:500px !important; height:500px !important; }
+        body.projector-mode .mo-legend-item { font-size:36px !important; }
+        body.projector-mode .mo-phase-info div[style*="font-size:16px"] { font-size:28px !important; }
+        body.projector-mode .mo-phase-info div[style*="font-size:19px"] { font-size:32px !important; }
+        body.projector-mode .mo-phase-info div[style*="font-size:24px"] { font-size:40px !important; }
+
+        /* === SLIDE 6 (Competition) === */
+        body.projector-mode #s6 h1 { font-size:86px !important; }
+        body.projector-mode #s6 .sub { font-size:44px !important; }
+        body.projector-mode .s7-card .ct { font-size:42px !important; }
+        body.projector-mode .s7-card .cb { font-size:36px !important; }
+
+        /* === SLIDE 7 (Founders) === */
+        body.projector-mode #s7 h1 { font-size:86px !important; }
+        body.projector-mode #s7 div[style*="font-size:38px"] { font-size:52px !important; }
+        body.projector-mode #s7 div[style*="font-size:19px"] { font-size:32px !important; }
+        body.projector-mode #s7 div[style*="font-size:20px"] { font-size:36px !important; }
+        body.projector-mode #s7 div[style*="font-size:22px"] { font-size:38px !important; }
+
+        /* === SLIDE 8 (Traction & Tech) === */
+        body.projector-mode #s8 h1 { font-size:84px !important; }
+        body.projector-mode #s8 h2 { font-size:60px !important; }
+        body.projector-mode #s8 .ct { font-size:40px !important; }
+        body.projector-mode #s8 .cb { font-size:36px !important; }
+        body.projector-mode #s8 div[style*="font-size:16px"] { font-size:28px !important; }
+        body.projector-mode #s8 div[style*="font-size:18px"] { font-size:32px !important; }
+        body.projector-mode #s8 div[style*="font-size:19px"] { font-size:32px !important; }
+        body.projector-mode #s8 div[style*="font-size:20px"] { font-size:36px !important; }
+        body.projector-mode #s8 div[style*="font-size:22px"] { font-size:38px !important; }
+        body.projector-mode #s8 .gtm-bar { height:14px !important; }
+
+        /* === SLIDE 9 (The Ask) === */
+        body.projector-mode #s9 h1 { font-size:108px !important; }
+        body.projector-mode #s9 .sub { font-size:44px !important; }
+        body.projector-mode #s9 .card div[style*="font-size:58px"] { font-size:86px !important; }
+        body.projector-mode #s9 .card div[style*="font-size:24px"] { font-size:40px !important; }
+        body.projector-mode #s9 .cb { font-size:38px !important; }
+        body.projector-mode #s9 div[style*="font-size:22px"] { font-size:38px !important; }
+        body.projector-mode #s9 div[style*="font-size:20px"] { font-size:36px !important; }
+        body.projector-mode #s9 div[style*="font-size:18px"] { font-size:32px !important; }
+        body.projector-mode #s9 div[style*="font-size:19px"] { font-size:32px !important; }
+
+        /* === SLIDE 10 (Origin Cinematic) === */
+        body.projector-mode #s10 div[style*="font-size:38px"] { font-size:52px !important; }
+        body.projector-mode #s10 div[style*="font-size:24px"] { font-size:40px !important; }
+    </style>
+
+    <!-- Projector mode indicator -->
+    <div id="proj-indicator" style="position:fixed;top:20px;right:20px;z-index:9999;font-family:'Roboto Mono',monospace;font-size:20px;color:#f39c12;background:rgba(10,10,12,0.8);border:1px solid rgba(243,156,18,0.3);border-radius:6px;padding:6px 14px;opacity:0;transition:opacity 0.4s ease;pointer-events:none">PROJECTOR MODE</div>
+
+<style id="css-scale-engine">
+    .slide {
+        width: 1920px !important;
+        height: 1080px !important;
+        transform: scale(var(--slide-scale, 1));
+        transform-origin: top left;
+        position: absolute !important;
+        top: 0; left: 0;
+    }
+</style>
+
+</head>
+
+<body>
+
+    <!-- Mobile Notice -->
+    <div id="mobile-notice">
+        <div style="font-size:64px;margin-bottom:20px">📡</div>
+        <div
+            style="font-size:44px;font-weight:800;background:linear-gradient(135deg,#e67e22,#f39c12);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px">
+            Sonar Conventions</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.7);margin-bottom:30px;line-height:1.6">This presentation is
+            optimized for<br>desktop & laptop viewing.</div>
+        <div
+            style="padding:14px 28px;border-radius:12px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.3);font-size:22px;color:#f39c12;letter-spacing:1px">
+            Open on your computer &rarr;</div>
+        <div style="margin-top:20px;font-size:20px;color:rgba(255,255,255,0.35)">sonar-live-stable-test.web.app</div>
+    </div>
+
+    <!-- ========== SLIDE 1: TITLE ========== -->
+    <div class="slide active" id="s1">
+        <canvas id="c1"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.6)"></div>
+        <div class="content" style="align-items:center;justify-content:center;text-align:center;position:relative;">
+
+            <!-- Phase 1: Sonar Connections -->
+            <div id="s1-connections" class="anim" data-s="1" data-st="0"
+                style="display:flex;align-items:center;gap:20px;margin:0 auto;transition:opacity 0.6s ease;z-index:10;">
+                <img src="Connections.png" alt="Sonar Connections Logo" style="height:90px; mix-blend-mode: screen;">
+                <div style="display:flex;flex-direction:column;align-items:flex-start;">
+                    <h1 class="s1-streak" style="font-size:88px;margin:0;letter-spacing:1px;white-space:nowrap;">Sonar
+                        Connections</h1>
+                    <p id="s1-tagline"
+                        style="font-size:42px;color:#c8b59a;margin:0 0 10px 4px;font-style:italic;white-space:nowrap;">
+                        Your <span id="s1-entire"
+                            style="display:inline-block;max-width:0;overflow:hidden;vertical-align:bottom;opacity:0;color:#4cdd86;text-shadow:0 0 12px rgba(76,221,134,0.6);transition:max-width 1.73s cubic-bezier(0.16,1,0.3,1), opacity 0.6s ease, color 1s ease 0.8s, text-shadow 1s ease 0.8s;white-space:nowrap">entire&nbsp;</span>social
+                        life cycle
+                    </p>
+                </div>
+            </div>
+
+            <!-- Phase 2: Sonar Conventions Flow -->
+            <div class="anim" data-s="1" data-st="1" style="display:flex;align-items:center;gap:20px;margin:0 auto;">
+                <img src="Conventions.png" alt="Orange S Logo" style="height:90px; mix-blend-mode: screen;">
+                <div style="display:flex;flex-direction:column;align-items:flex-start;">
+                    <h2
+                        style="font-size:88px;color:#e67e22;margin:0;letter-spacing:1px;font-weight:600;white-space:nowrap;">
+                        Sonar Conventions</h2>
+                    <p style="font-size:38px;color:#c8b59a;margin:0 0 10px 4px;font-style:italic;white-space:nowrap;">
+                        "Where the right connections happen &mdash; not by chance, but <span
+                            style="color:#e67e22;font-weight:600">by design.</span>"</p>
+                </div>
+            </div>
+
+            <!-- Like LI removed -->
+            <div class="anim" data-s="1" data-st="3"
+                style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px">
+                <span style="font-size:24px;color:#c8b59a;font-weight:400;letter-spacing:1px">One Code, Infinite
+                    Contexts</span>
+                <div style="display:flex; gap:8px;">
+                    <img src="Live.png" alt="Sonar Live" style="height:36px; mix-blend-mode: screen;">
+                    <img src="Campus.png" alt="Sonar Campus" style="height:36px; mix-blend-mode: screen;">
+                    <img src="Social.png" alt="Sonar Social" style="height:36px; mix-blend-mode: screen;">
+                    <img src="Conventions.png" alt="Sonar Conventions" style="height:36px; mix-blend-mode: screen;">
+                </div>
+            </div>
+            <!-- Pitch 2026 removed -->
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 2: PROBLEM ========== -->
+    <div class="slide" id="s2">
+        <canvas id="c2"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.30)" id="s2ov"></div>
+        <div class="content">
+            <div class="tag">SONAR CONVENTIONS // THE PROBLEM</div>
+            <h1 class="anim red" data-s="2" data-st="0">Two Problems</h1>
+            <p class="sub anim" data-s="2" data-st="0" style="max-width:700px">At conventions, <span
+                    style="color:#e74c3c;font-weight:600">vendors can't find the right attendees</span> and <span
+                    style="color:#e74c3c;font-weight:600">attendees can't find the right vendors</span> &mdash; so
+                everyone <span style="color:#e74c3c;font-weight:600">wastes time, effort, and money.</span>
+            </p>
+            <div style="display:flex;gap:28px;margin:auto 0">
+                <div class="card anim" data-s="2" data-st="1" style="flex:1;padding:36px;">
+                    <div class="ct" style="font-size:36px;margin-bottom:12px;">&#x1F4B0; High Costs</div>
+                    <div class="cb" style="font-size:26px;line-height:1.6;">
+                        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Exhibitors invest $30K-$100K per event in booth space, travel, and sponsorships &mdash; with significant financial risk.</span>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:8px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Attendees spend thousands on travel, time, and conference fees &mdash; with no guarantee of meaningful connections.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card anim" data-s="2" data-st="2" style="flex:1;padding:36px;">
+                    <div class="ct" style="font-size:36px;margin-bottom:12px;">&#x1F441; Zero Visibility</div>
+                    <div class="cb" style="font-size:26px;line-height:1.6;">
+                        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Exhibitors have no visibility into who walks past their booth, what they're looking for, or whether they're a qualified lead.</span>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:8px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Attendees have no way to discover which booths match their interests &mdash; leading to aimless wandering and missed opportunities.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card anim" data-s="2" data-st="3" style="flex:1;padding:36px;">
+                    <div class="ct" style="font-size:36px;margin-bottom:12px;">&#x1F4C9; Uncertain ROI</div>
+                    <div class="cb" style="font-size:26px;line-height:1.6;">
+                        <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Exhibitors can't justify event spend to stakeholders &mdash; high costs + zero data makes every event a gamble.</span>
+                        </div>
+                        <div style="display:flex;align-items:flex-start;gap:8px">
+                            <span style="color:#e74c3c;font-size:20px;margin-top:4px">&#x25CF;</span>
+                            <span>Attendees leave unsure if the trip was worth it &mdash; no way to measure whether they made the right connections.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="anim mono" data-s="2" data-st="0"
+            style="position:absolute;bottom:24px;left:70px;font-size:32px;color:#e74c3c;z-index:3">Exhibitor spend
+            burning: <b id="s2cost" style="font-size:40px;">$0</b></div>
+        <div class="anim" data-s="2" data-st="1"
+            style="position:absolute;top:50px;right:70px;text-align:right;z-index:3;font-family:'Roboto Mono',monospace">
+            <div style="font-size:18px;color:#c8a570;letter-spacing:2px;text-transform:uppercase">Missed Connections
+            </div>
+            <div id="s2miss" style="font-size:60px;font-weight:900;color:#e74c3c;line-height:1">0</div>
+            <div style="font-size:18px;color:#917f6e">Qualified Leads Walked Past</div>
+        </div>
+        <div class="anim" data-s="2" data-st="4"
+            style="position:absolute;bottom:24px;right:70px;text-align:right;z-index:3">
+            <div style="font-size:28px;color:#c8b59a;font-weight:300;font-style:italic;">"In other words: they invest
+                heavily,</div>
+            <div style="font-size:36px;font-weight:700;color:#e74c3c;margin-top:3px;font-style:italic;">but operate
+                blindly."</div>
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 3: HOW IT WORKS / DEMO ========== -->
+    <div class="slide" id="s3">
+        <canvas id="c3"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.8)"></div>
+        <div class="content" style="align-items:stretch;justify-content:center">
+            <div class="tag">SONAR CONVENTIONS // HOW WE FIX THIS</div>
+            <h1 class="anim orange" data-s="3" data-st="0">One Solution</h1>
+            <p class="sub anim" data-s="3" data-st="0" style="max-width:700px">Like <span
+                    style="color:#0a66c2;font-weight:600">LinkedIn</span>, but <span
+                    style="color:#e67e22;font-weight:700">live</span> &mdash; it automatically connects <span
+                    style="color:#e67e22;font-weight:600">vendor services</span> with <span
+                    style="color:#e67e22;font-weight:600">attendee intent</span> so everyone maximizes their <span
+                    style="color:#f39c12;font-weight:600">time, effort, and investment.</span></p>
+
+            <!-- Two-phase layout -->
+            <div class="anim" data-s="3" data-st="0" style="display:flex;gap:28px;flex:1;margin-top:12px;align-items:stretch;position:relative">
+                <!-- Left sidebar: Solution cards (always visible) -->
+                <div style="flex:0 0 30%;display:flex;flex-direction:column;gap:14px;justify-content:center">
+                    <div class="card" style="flex:1;padding:24px;border-left:3px solid #e67e22">
+                        <div class="ct" style="font-size:32px;margin-bottom:8px;">&#x1F4F1; Proximity Awareness</div>
+                        <div class="cb" style="font-size:24px;line-height:1.6;">Attendees see nearby booths, exhibitors, and
+                            live activity &mdash; all through their
+                            phone.</div>
+                    </div>
+                    <div class="card" style="flex:1;padding:24px;border-left:3px solid #f39c12">
+                        <div class="ct" style="font-size:32px;margin-bottom:8px;">&#x1F4CA; Real-Time Analytics</div>
+                        <div class="cb" style="font-size:24px;line-height:1.6;">Exhibitors get live foot traffic, dwell
+                            time, and engagement data for every booth
+                            visit.</div>
+                    </div>
+                    <div class="card" style="flex:1;padding:24px;border-left:3px solid #34d399">
+                        <div class="ct" style="font-size:32px;margin-bottom:8px;">&#x1F91D; Smart Matching</div>
+                        <div class="cb" style="font-size:24px;line-height:1.6;">Attendees are matched to exhibitors based on
+                            intent.</div>
+                    </div>
+                </div>
+
+                <!-- Right: Phase 0 = Compact Digital Layer -->
+                <div id="dre-compact" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:opacity 0.8s ease">
+                    <div id="dreCompactStatus" style="font-family:'Roboto Mono',monospace;font-size:19px;font-weight:700;color:rgba(230,126,34,0.8);letter-spacing:2px;text-transform:uppercase;opacity:0;transition:opacity 0.4s ease;margin-bottom:8px;text-align:center"></div>
+                    <div id="dreCompactCounter" style="font-family:'Roboto Mono',monospace;font-size:40px;font-weight:900;color:rgba(230,126,34,0.8);letter-spacing:2px;opacity:0;transition:opacity 0.4s ease;margin-bottom:12px;text-align:center"></div>
+                    <div style="transform:scale(1.40) translate(15%, -5%);transform-origin:center center">
+                        <div class="dre-scene" style="width:700px;height:500px">
+                            <div class="dre-floor" id="dreCompactFloor" style="width:680px;height:480px">
+                                <div class="dre-floor-grid"></div>
+                                <div class="dre-digital-layer" id="dreCompactLayer"></div>
+                                <div class="dre-scan-line" id="dreCompactScan"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <!-- Hidden trigger for phase 1 -->
+                <div class="anim" data-s="3" data-st="1" style="display:none"></div>
+                <!-- Right: Phase 1 = Phone Video (hidden initially) -->
+                <div id="s3-phone-wrap" style="position:absolute;top:0;right:0;bottom:0;width:70%;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.8s ease">
+                    <div style="flex:0 0 auto;position:relative">
+                        <div
+                            style="height:min(70vh, 780px);aspect-ratio:9/19.5;border-radius:28px;border:3px solid rgba(230,126,34,0.4);background:#000;overflow:hidden;box-shadow:0 0 40px rgba(230,126,34,0.15),0 20px 60px rgba(0,0,0,0.6),inset 0 0 0 8px #000;position:relative">
+                            <!-- Pixel punch-hole camera -->
+                            <div
+                                style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#111;border-radius:50%;border:1px solid rgba(255,255,255,0.08);z-index:2">
+                            </div>
+                            <video id="s3-phone-video" loop muted playsinline
+                                style="width:100%;height:100%;object-fit:cover;background:#000;border-radius:22px;clip-path:inset(1px round 22px)">
+                                <source src="Transition Split.mp4" type="video/mp4">
+                            </video>
+                            <!-- Android gesture bar -->
+                            <div
+                                style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:90px;height:4px;background:rgba(255,255,255,0.3);border-radius:2px;z-index:2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        /* === COMPACT DRE STYLES (embedded in solution slide) === */
+        .dre-scene {
+            position:relative;
+            perspective:1200px;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .dre-floor {
+            position:relative;
+            transform: rotateX(55deg) rotateZ(-30deg);
+            transform-style:preserve-3d;
+        }
+        .dre-floor-grid {
+            position:absolute; top:0; left:0; width:100%; height:100%;
+            background-image:
+                linear-gradient(rgba(100,90,75,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100,90,75,0.15) 1px, transparent 1px);
+            background-size: 50px 50px;
+            border:1px solid rgba(100,90,75,0.1);
+        }
+        .dre-booth {
+            position:absolute; width:36px; height:36px;
+            background:rgba(40,36,30,0.9); border:1px solid rgba(100,90,75,0.2);
+            border-radius:3px; transition: all 0.4s ease; transform-style:preserve-3d;
+        }
+        .dre-booth .dre-booth-top {
+            position:absolute; top:-5px; left:0; width:100%; height:100%;
+            background:rgba(60,54,44,0.8); border:1px solid rgba(100,90,75,0.25);
+            border-radius:3px; transform:translateZ(5px);
+        }
+        .dre-booth.dre-tier-pro .dre-booth-top {
+            background:rgba(230,126,34,0.25); border-color:rgba(230,126,34,0.5);
+            box-shadow: 0 0 12px rgba(230,126,34,0.4), inset 0 0 8px rgba(230,126,34,0.2);
+        }
+        .dre-booth.dre-tier-pro::after {
+            content:''; position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%); width:48px; height:48px; border-radius:50%;
+            border:2px solid rgba(230,126,34,0.6); animation:dreRingPulse 2s ease-out infinite;
+        }
+        .dre-booth.dre-tier-premium .dre-booth-top {
+            background:rgba(243,156,18,0.35); border-color:rgba(243,156,18,0.7);
+            box-shadow: 0 0 20px rgba(243,156,18,0.6), inset 0 0 10px rgba(243,156,18,0.3);
+        }
+        .dre-booth.dre-tier-premium::after {
+            content:''; position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%); width:50px; height:50px; border-radius:50%;
+            border:2px solid rgba(243,156,18,0.8); animation:dreRingPulse 1.8s ease-out infinite;
+        }
+        @keyframes dreRingPulse {
+            0% { transform:translate(-50%,-50%) scale(0.8); opacity:1; }
+            100% { transform:translate(-50%,-50%) scale(1.8); opacity:0; }
+        }
+        .dre-ad-panel {
+            position:absolute; transform-style:preserve-3d;
+            transform:translateZ(40px) rotateX(-55deg) rotateZ(30deg);
+            opacity:0; transition:opacity 0.4s ease; pointer-events:none; z-index:20;
+        }
+        .dre-ad-panel.dre-on { opacity:1; }
+        .dre-ad-card {
+            background:rgba(15,13,10,0.92); border:1px solid rgba(230,126,34,0.3);
+            border-radius:5px; padding:4px 8px; min-width:80px; text-align:center;
+            box-shadow:0 0 12px rgba(230,126,34,0.15), 0 3px 10px rgba(0,0,0,0.6); position:relative;
+        }
+        .dre-ad-card::before {
+            content:''; position:absolute; top:0; left:0; width:100%; height:2px;
+            background:linear-gradient(90deg, transparent, rgba(230,126,34,0.6), transparent);
+            border-radius:5px 5px 0 0;
+        }
+        .dre-ad-card.dre-premium-ad { border-color:rgba(243,156,18,0.5); box-shadow:0 0 18px rgba(243,156,18,0.2), 0 3px 14px rgba(0,0,0,0.6); }
+        .dre-ad-card.dre-premium-ad::before { background:linear-gradient(90deg, transparent, rgba(243,156,18,0.8), transparent); }
+        .dre-ad-title { font-family:'Roboto Mono',monospace; font-size:14px; color:rgba(200,185,165,0.9); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:2px; }
+        .dre-ad-content { font-size:15px; font-weight:700; color:#e67e22; line-height:1.2; }
+        .dre-ad-card.dre-premium-ad .dre-ad-content { color:#f39c12; font-size:16px; }
+        .dre-ad-cta { margin-top:3px; font-size:14px; font-family:'Roboto Mono',monospace; color:rgba(230,126,34,0.6); letter-spacing:1px; text-transform:uppercase; padding:1px 4px; border:1px solid rgba(230,126,34,0.2); border-radius:2px; display:inline-block; }
+        .dre-ad-stem { position:absolute; bottom:-16px; left:50%; transform:translateX(-50%); width:1px; height:16px; background:linear-gradient(to bottom, rgba(230,126,34,0.4), rgba(230,126,34,0.1)); }
+        @keyframes dreAdShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+        .dre-ad-card.dre-shimmer { background-image:linear-gradient(90deg, rgba(15,13,10,0.92) 40%, rgba(230,126,34,0.08) 50%, rgba(15,13,10,0.92) 60%); background-size:200% 100%; animation:dreAdShimmer 3s ease-in-out infinite; }
+
+        /* Descending digital overlay */
+        .dre-digital-layer {
+            position:absolute; top:-120%; left:-5%; width:110%; height:110%;
+            background: linear-gradient(rgba(230,126,34,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(230,126,34,0.08) 1px, transparent 1px);
+            background-size:50px 50px;
+            border:2px solid rgba(230,126,34,0.3);
+            box-shadow:0 0 40px rgba(230,126,34,0.15), inset 0 0 60px rgba(230,126,34,0.05);
+            opacity:0; transition: top 1.5s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s ease;
+            pointer-events:none; z-index:10;
+        }
+        .dre-digital-layer.dre-descending { opacity:1; top:-5%; }
+        .dre-digital-layer.dre-landed {
+            top:0%; opacity:0.7;
+            background:linear-gradient(rgba(230,126,34,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(230,126,34,0.04) 1px, transparent 1px);
+            background-size:50px 50px; border-color:rgba(230,126,34,0.15);
+            box-shadow:0 0 20px rgba(230,126,34,0.08);
+            transition: top 0.75s ease, opacity 0.75s ease, background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease;
+        }
+        .dre-scan-line {
+            position:absolute; top:0; left:0; width:100%; height:3px;
+            background:linear-gradient(90deg, transparent, rgba(230,126,34,0.7), rgba(243,156,18,0.9), rgba(230,126,34,0.7), transparent);
+            box-shadow:0 0 20px rgba(230,126,34,0.5);
+            opacity:0; z-index:11; pointer-events:none;
+        }
+        .dre-scan-line.dre-active { opacity:1; animation:dreScanDown 1s ease-in-out forwards; }
+        @keyframes dreScanDown { 0%{top:0%;opacity:0.5} 10%{opacity:1} 90%{opacity:1} 100%{top:100%;opacity:0} }
+
+        /* Projector mode: solution slide */
+        body.projector-mode #s3 h1 { font-size:68px !important; }
+        body.projector-mode #s3 .sub { font-size:38px !important; max-width:900px !important; }
+        body.projector-mode #s3 .ct { font-size:38px !important; }
+        body.projector-mode #s3 .cb { font-size:30px !important; }
+        body.projector-mode #s3 .tag { font-size:24px !important; }
+        body.projector-mode #dreCompactStatus { font-size:24px !important; }
+        body.projector-mode #dreCompactCounter { font-size:48px !important; }
+    </style>
+
+    <!-- ========== SLIDE 4: BUSINESS MODEL & GO-TO-MARKET ========== -->
+    <div class="slide" id="s4">
+        <canvas id="c4"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.65)"></div>
+        <div class="content">
+            <div class="tag">SONAR CONVENTIONS // BUSINESS MODEL &amp; GTM</div>
+            <h1 class="anim amber" data-s="4" data-st="0">Business Model &amp; Go-To-Market</h1>
+            <p class="sub anim" data-s="4" data-st="0" style="white-space:nowrap">Per-event SaaS licensing &middot; Four-phase rollout</p>
+
+            <!-- MAIN LAYOUT: Left Pricing Sidebar + Right GTM Area -->
+            <div style="display:flex;gap:20px;flex:1;margin-top:14px;align-items:stretch">
+
+                <!-- LEFT SIDEBAR: Pricing (~20%) - Graduated sizing -->
+                <div class="anim" data-s="4" data-st="1" style="flex:0 0 18%;display:flex;flex-direction:column">
+                    <!-- PRICING label removed -->
+                    <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+                        <!-- Basic: Small -->
+                        <div class="card" style="padding:10px 14px;border-left:3px solid #917f6e;flex:0.6;display:flex;flex-direction:column;justify-content:center">
+                            <div style="font-size:15px;color:#917f6e;text-transform:uppercase;letter-spacing:2px">Basic</div>
+                            <div style="font-size:28px;font-weight:900;color:#c8b59a;margin:2px 0">Free</div>
+                            <div class="cb" style="font-size:15px">Floor map &middot; Listing</div>
+                        </div>
+                        <!-- Pro: Medium -->
+                        <div class="card" style="padding:14px 14px;border-left:3px solid #e67e22;flex:1;display:flex;flex-direction:column;justify-content:center">
+                            <div style="font-size:16px;color:#e67e22;text-transform:uppercase;letter-spacing:2px">Pro</div>
+                            <div style="font-size:36px;font-weight:900;color:#e67e22;margin:3px 0">$795<span style="font-size:15px;color:#d4c4b0">/evt</span></div>
+                            <div class="cb" style="font-size:16px">Booth highlight<br>Lead capture &middot; Digital swag</div>
+                        </div>
+                        <!-- Premium: Large -->
+                        <div class="card" style="padding:18px 14px;border-left:3px solid #f39c12;flex:1.5;display:flex;flex-direction:column;justify-content:center">
+                            <div style="font-size:16px;color:#f39c12;text-transform:uppercase;letter-spacing:2px">Premium</div>
+                            <div style="font-size:38px;font-weight:900;color:#f39c12;margin:4px 0">$1,995<span style="font-size:15px;color:#d4c4b0">/evt</span></div>
+                            <div class="cb" style="font-size:16px">Everything in Pro<br>Priority placement<br>Full analytics dashboard</div>
+                        </div>
+                    </div>
+                    <!-- Rev/Event removed -->
+                </div>
+
+                <!-- RIGHT: GTM Strategy + Timeline (~80%) -->
+                <div style="flex:1;display:flex;flex-direction:column">
+                    <!-- GTM label removed -->
+
+                    <!-- Phase Cards: Single Row, each animates individually -->
+                    <div style="display:flex;gap:14px;flex:1">
+                        <div class="card anim" data-s="4" data-st="2" style="flex:1;padding:24px 18px;border-left:3px solid #5eead4;display:flex;flex-direction:column">
+                            <div style="font-size:44px;margin-bottom:10px">&#x1F527;</div>
+                            <div class="ct" style="font-size:30px;margin-bottom:8px">Build &amp; Validate</div>
+                            <div class="cb" style="font-size:22px;line-height:1.6;flex:1"><ul style="margin:0;padding-left:16px;list-style:disc"><li>Finalize MVP</li><li>Secure IP protection</li><li>Build advisory network</li><li>Prepare pilot partnerships</li></ul></div>
+                        </div>
+                        <div class="card anim" data-s="4" data-st="3" style="flex:1;padding:24px 18px;border-left:3px solid #34d399;display:flex;flex-direction:column">
+                            <div style="font-size:44px;margin-bottom:10px">&#x1F680;</div>
+                            <div class="ct" style="font-size:30px;margin-bottom:8px">Launch at LBCC</div>
+                            <div class="cb" style="font-size:22px;line-height:1.6;flex:1"><ul style="margin:0;padding-left:16px;list-style:disc"><li>Pilot with Long Beach Convention Center</li><li>Prove model at a single anchor venue</li><li>Collect exhibitor case studies</li></ul></div>
+                        </div>
+                        <div class="card anim" data-s="4" data-st="4" style="flex:1;padding:24px 18px;border-left:3px solid #f39c12;display:flex;flex-direction:column">
+                            <div style="font-size:44px;margin-bottom:10px">&#x1F4C8;</div>
+                            <div class="ct" style="font-size:30px;margin-bottom:8px">SoCal Circuit</div>
+                            <div class="cb" style="font-size:22px;line-height:1.6;flex:1"><ul style="margin:0;padding-left:16px;list-style:disc"><li>Expand to 10+ SoCal venues</li><li>Anaheim, San Diego, Pasadena, LA CC</li><li>Dominate the convention corridor</li></ul></div>
+                        </div>
+                        <div class="card anim" data-s="4" data-st="5" style="flex:1;padding:24px 18px;border-left:3px solid #e67e22;display:flex;flex-direction:column">
+                            <div style="font-size:44px;margin-bottom:10px">&#x1F310;</div>
+                            <div class="ct" style="font-size:30px;margin-bottom:8px">Platform Standard</div>
+                            <div class="cb" style="font-size:22px;line-height:1.6;flex:1"><ul style="margin:0;padding-left:16px;list-style:disc"><li>Exhibitors demand Sonar</li><li>Venues bundle into booth packages</li><li>Year-round marketplace</li></ul></div>
+                        </div>
+                    </div>
+
+                    <!-- Timeline: Each milestone appears with its card -->
+                    <div style="margin-top:14px;background:rgba(16,14,12,0.7);border:1px solid rgba(230,126,34,0.12);border-radius:10px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between">
+                        <div class="anim" data-s="4" data-st="2" style="flex:1;text-align:center">
+                            <div class="mono dim" style="font-size:16px">Q1 2026</div>
+                            <div style="font-size:20px;font-weight:700;color:#5eead4">Pre-LAM</div>
+                        </div>
+                        <div class="anim gtm-bar" data-s="4" data-st="3" style="max-width:0;height:3px;flex:0 0 60px;background:linear-gradient(90deg,#5eead4,#34d399);transition:max-width 0.8s ease-in-out;border-radius:2px"></div>
+                        <div class="anim" data-s="4" data-st="3" style="flex:1;text-align:center">
+                            <div class="mono dim" style="font-size:16px">Q3 2026</div>
+                            <div class="bold" style="font-size:20px;color:#34d399">LAM</div>
+                        </div>
+                        <div class="anim gtm-bar" data-s="4" data-st="4" style="max-width:0;height:3px;flex:0 0 60px;background:linear-gradient(90deg,#34d399,#f39c12);transition:max-width 0.8s ease-in-out;border-radius:2px"></div>
+                        <div class="anim" data-s="4" data-st="4" style="flex:1;text-align:center">
+                            <div class="mono dim" style="font-size:16px">Q2 2027</div>
+                            <div class="amber bold" style="font-size:20px">SOM</div>
+                        </div>
+                        <div class="anim gtm-bar" data-s="4" data-st="5" style="max-width:0;height:3px;flex:0 0 60px;background:linear-gradient(90deg,#f39c12,#e67e22);transition:max-width 0.8s ease-in-out;border-radius:2px"></div>
+                        <div class="anim" data-s="4" data-st="5" style="flex:1;text-align:center">
+                            <div class="mono dim" style="font-size:16px">2028 (Olympics)</div>
+                            <div class="bold" style="font-size:20px;color:#e67e22">SAM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 5: MARKET OPPORTUNITY (DONUT GRAM) ========== -->
+    <style>
+    #s5 { padding:0 !important; }
+    #s5 .mo-container { display:flex; width:100%; height:100%; }
+    #s5 .mo-map-side { flex:1.3; position:relative; overflow:hidden; }
+    #s5 .mo-donut-side { flex:0.7; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; border-left:1px solid rgba(100,90,75,0.15); background:rgba(10,10,12,0.75); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); gap:8px; }
+    #s5 .mo-tag { position:absolute; top:40px; left:60px; font-family:'Roboto Mono',monospace; font-size:20px; letter-spacing:3px; color:rgba(200,185,165,0.8); text-transform:uppercase; z-index:20; font-weight:600; }
+    #s5 .mo-map-layer { position:absolute; top:0; left:0; width:100%; height:100%; transition:opacity 1.2s ease; overflow:hidden; }
+    #s5 .mo-map-layer img { width:100%; height:100%; object-fit:cover; opacity:0.9; }
+    #s5 .mo-map-inner { position:relative; width:100%; height:100%; transition:transform 1.8s cubic-bezier(0.25,0.46,0.45,0.94); }
+    #s5 .mo-pin { position:absolute; border-radius:50%; opacity:0; transform:scale(0); transition:opacity 0.5s ease, transform 0.5s cubic-bezier(0.34,1.56,0.64,1); z-index:6; }
+    #s5 .mo-pin.on { opacity:1; transform:scale(1); }
+    #s5 .mo-pin .ring { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); border-radius:50%; border:1px solid; animation:moPingRing 2.5s ease-out infinite; }
+    @keyframes moPingRing { 0%{width:100%;height:100%;opacity:0.7} 100%{width:350%;height:350%;opacity:0} }
+    #s5 .mo-plbl { position:absolute; font-family:'Roboto Mono',monospace; font-size:19px; font-weight:600; letter-spacing:0.5px; white-space:nowrap; opacity:0; transition:opacity 0.5s ease 0.2s; z-index:7; }
+    #s5 .mo-plbl.on { opacity:1; }
+    #s5 .mo-c-lam { background:#34d399; box-shadow:0 0 15px rgba(52,211,153,0.7); }
+    #s5 .mo-c-lam .ring { border-color:rgba(52,211,153,0.5); }
+    #s5 .mo-t-lam { color:#34d399; }
+    #s5 .mo-c-som { background:#f39c12; box-shadow:0 0 10px rgba(243,156,18,0.5); }
+    #s5 .mo-c-som .ring { border-color:rgba(243,156,18,0.4); }
+    #s5 .mo-t-som { color:#f39c12; }
+    #s5 .mo-c-sam { background:#e67e22; box-shadow:0 0 10px rgba(230,126,34,0.5); }
+    #s5 .mo-c-sam .ring { border-color:rgba(230,126,34,0.3); }
+    #s5 .mo-t-sam { color:#e67e22; }
+    #s5 .mo-c-tam { background:#c8b59a; box-shadow:0 0 8px rgba(160,145,125,0.4); }
+    #s5 .mo-c-tam .ring { border-color:rgba(160,145,125,0.3); }
+    #s5 .mo-t-tam { color:rgba(180,170,155,0.85); }
+    #s5 .mo-phase-info { position:absolute; top:80px; left:60px; z-index:20; opacity:0; transition:all 0.6s ease; background:rgba(10,10,12,0.65); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(100,90,75,0.15); border-radius:12px; padding:20px 24px; }
+    #s5 .mo-phase-info.on { opacity:1; }
+    #s5 .mo-phase-info.us-pos { top:auto; bottom:10px; left:40px; }
+    #s5 .mo-phase-amt { font-size:68px; font-weight:900; line-height:1; transition:all 0.6s ease; text-shadow:0 0 20px rgba(0,0,0,0.5); }
+    #s5 .mo-phase-name { font-size:38px; font-weight:800; margin-top:4px; transition:all 0.6s ease; text-shadow:0 0 15px rgba(0,0,0,0.4); }
+    #s5 .mo-phase-sub { font-family:'Roboto Mono',monospace; font-size:20px; font-weight:600; letter-spacing:2px; color:rgba(200,185,165,0.9); margin-top:6px; text-transform:uppercase; }
+    #s5 .mo-phase-detail { font-size:24px; font-weight:500; color:rgba(200,185,165,0.85); margin-top:3px; }
+    #s5 .mo-donut-wrap { position:relative; width:400px; height:400px; }
+    /* Revenue tier table — with headers */
+    #s5 .mo-rev-header { display:flex; gap:8px; align-items:center; padding:6px 0; border-bottom:1px solid rgba(100,90,75,0.2); opacity:0; transform:translateY(8px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    #s5 .mo-rev-header.on { opacity:1; transform:translateY(0); }
+    #s5 .mo-rev-header span { font-family:'Roboto Mono',monospace; font-size:18px; font-weight:700; letter-spacing:1px; color:rgba(200,185,165,0.9); text-transform:uppercase; text-align:center; }
+    #s5 .mo-rev-table { width:92%; margin-top:16px; font-family:'Roboto Mono',monospace; }
+    #s5 .mo-rev-row { display:flex; gap:8px; align-items:center; padding:10px 0; border-bottom:1px solid rgba(100,90,75,0.1); opacity:0; transform:translateY(8px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    #s5 .mo-rev-row.on { opacity:1; transform:translateY(0); }
+    #s5 .mo-rev-row .rv-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
+    #s5 .mo-rev-row .rv-tier { flex:0.6; font-size:32px; font-weight:900; letter-spacing:2px; }
+    #s5 .mo-rev-row .rv-conv { flex:1; font-size:36px; font-weight:900; text-align:center; transition:all 0.7s cubic-bezier(0.25,0.46,0.45,0.94); }
+    #s5 .mo-rev-row .rv-corr { flex:1; font-size:32px; font-weight:800; text-align:center; }
+    #s5 .mo-rev-row .rv-conv.glow-snap { text-shadow:0 0 20px currentColor; transform:scale(1.05); transition:text-shadow 0.3s ease, transform 0.3s ease; }
+    #s5 .mo-donut-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:5; }
+    #s5 .mo-dc-label { font-size:32px; font-weight:800; letter-spacing:1px; transition:all 0.6s ease; }
+    #s5 .mo-dc-sub { font-size:20px; color:#c8b59a; font-weight:600; margin-top:2px; }
+    #s5 .mo-donut-arc { opacity:0; transition:opacity 0.6s ease; }
+    #s5 .mo-donut-arc.on { opacity:1; }
+    #s5 .mo-legend { display:flex; flex-wrap:wrap; gap:14px; margin-top:24px; justify-content:center; }
+    #s5 .mo-leg { display:flex; align-items:center; gap:6px; opacity:0; transition:opacity 0.5s ease; }
+    #s5 .mo-leg.on { opacity:1; }
+    #s5 .mo-ld { width:12px; height:12px; border-radius:50%; }
+    #s5 .mo-stat-block { font-family:'Roboto Mono',monospace; font-size:22px; font-weight:500; color:rgba(200,185,165,0.9); text-align:center; margin-top:16px; min-height:54px; transition:all 0.6s ease; line-height:1.8; }
+    #s5 .mo-stat-row { opacity:0; transform:translateY(6px); transition:opacity 0.5s ease, transform 0.5s ease; }
+    #s5 .mo-stat-row.on { opacity:1; transform:translateY(0); }
+    body.projector-mode #s5 .mo-phase-amt { font-size:72px; }
+    body.projector-mode #s5 .mo-phase-name { font-size:44px; font-weight:800; }
+    body.projector-mode #s5 .mo-phase-sub { font-size:24px; letter-spacing:3px; color:rgba(160,145,125,0.7); }
+    body.projector-mode #s5 .mo-phase-detail { font-size:28px; color:rgba(160,145,125,0.6); font-weight:500; }
+    body.projector-mode #s5 .mo-plbl { font-size:19px !important; font-weight:600 !important; }
+    body.projector-mode #s5 .mo-dc-label { font-size:38px; font-weight:800; }
+    body.projector-mode #s5 .mo-dc-sub { font-size:22px; color:#c8b59a; font-weight:500; }
+    body.projector-mode #s5 .mo-leg span { font-size:24px !important; font-weight:700 !important; }
+    body.projector-mode #s5 .mo-stat-block { font-size:24px; color:rgba(160,145,125,0.7); font-weight:500; }
+    </style>
+
+    <div class="slide" id="s5">
+        <div class="mo-tag">SONAR CONVENTIONS // MARKET OPPORTUNITY</div>
+        <div class="mo-container">
+            <div class="mo-map-side">
+                <div class="mo-map-layer" id="moSocalLayer" style="opacity:1">
+                    <div class="mo-map-inner" id="moSocalInner" style="transform:scale(1.3) translate(0,0)">
+                        <img src="socal-map.png" alt="SoCal Convention Map"/>
+                        <div class="mo-pin mo-c-lam" id="mo-p-lbcc" style="width:16px;height:16px;left:52.7%;top:53.5%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-lam" id="mo-pl-lbcc" style="left:54.5%;top:52%;font-size:19px;font-weight:700">LBCC</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-lacc" style="width:11px;height:11px;left:52.1%;top:41.0%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-lacc" style="left:53.8%;top:39.0%">LA CC</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-anaheim" style="width:11px;height:11px;left:61.0%;top:48.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-anaheim" style="left:63%;top:46.5%">Anaheim</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-sandiego" style="width:11px;height:11px;left:80.2%;top:93.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-sandiego" style="left:82.0%;top:91.5%">San Diego</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-pasadena" style="width:9px;height:9px;left:56.0%;top:36.0%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-pasadena" style="left:57.8%;top:34.0%;font-size:14px">Pasadena</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-ontario" style="width:9px;height:9px;left:68.1%;top:39.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-ontario" style="left:70.0%;top:37.5%;font-size:14px">Ontario</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-riverside" style="width:9px;height:9px;left:79.8%;top:43.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-riverside" style="left:81.5%;top:41.5%;font-size:14px">Riverside</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-palmsprings" style="width:9px;height:9px;left:96.3%;top:44.9%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-palmsprings" style="left:88%;top:43.0%;font-size:14px">Palm Springs</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-santabarbara" style="width:8px;height:8px;left:26.7%;top:38.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-santabarbara" style="left:28.5%;top:36.0%;font-size:14px">Santa Barbara</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-ventura" style="width:8px;height:8px;left:31.7%;top:40.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-ventura" style="left:33.5%;top:38.5%;font-size:14px">Ventura</div>
+                        <div class="mo-pin mo-c-som" id="mo-p-delmar" style="width:8px;height:8px;left:76.3%;top:73.9%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl-delmar" style="left:78.0%;top:72.0%;font-size:14px">Del Mar</div>
+                    </div>
+                </div>
+                <div class="mo-map-layer" id="moUsLayer" style="opacity:0">
+                    <div class="mo-map-inner" id="moUsInner">
+                        <img src="us-map-dark.png" alt="US Convention Map"/>
+                        <div class="mo-pin mo-c-lam" id="mo-p2-longbeach" style="width:10px;height:10px;left:10.2%;top:58.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-lam" id="mo-pl2-longbeach" style="left:3%;top:56.5%;font-size:15px;font-weight:700">Long Beach</div>
+                        <div class="mo-pin mo-c-som" id="mo-p2-sandiego" style="width:10px;height:10px;left:11.5%;top:61.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-som" id="mo-pl2-sandiego" style="left:13%;top:59.5%;font-size:15px;font-weight:600">San Diego</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sf" style="width:9px;height:9px;left:5.0%;top:46.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sf" style="left:1%;top:44.0%">San Francisco</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-lv" style="width:9px;height:9px;left:16.7%;top:56.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-lv" style="left:18%;top:54%">Las Vegas</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-phx" style="width:9px;height:9px;left:21.1%;top:61.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-phx" style="left:22.5%;top:59.8%">Phoenix</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sea" style="width:9px;height:9px;left:11.4%;top:19.0%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sea" style="left:12.7%;top:17.0%">Seattle</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-pdx" style="width:8px;height:8px;left:8.0%;top:25.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-pdx" style="left:9.3%;top:23.0%;font-size:14px">Portland</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-den" style="width:9px;height:9px;left:34.3%;top:48.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-den" style="left:35.5%;top:46.5%">Denver</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-slc" style="width:8px;height:8px;left:23.2%;top:43.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-slc" style="left:24.5%;top:41%;font-size:14px">SLC</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-austin" style="width:9px;height:9px;left:47.4%;top:75.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-austin" style="left:49%;top:73%">Austin</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-dallas" style="width:9px;height:9px;left:48.6%;top:69.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-dallas" style="left:50%;top:67.5%">Dallas</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-houston" style="width:9px;height:9px;left:53.7%;top:76.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-houston" style="left:55%;top:74.0%">Houston</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-abq" style="width:8px;height:8px;left:32.5%;top:61.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-abq" style="left:34%;top:59%;font-size:14px">Albuquerque</div>
+                        <div class="mo-pin mo-c-sam" id="mo-p-sanantonio" style="width:8px;height:8px;left:46.1%;top:77.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-sam" id="mo-pl-sanantonio" style="left:37%;top:75%;font-size:14px">San Antonio</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-chi" style="width:8px;height:8px;left:64.6%;top:40.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-chi" style="left:66%;top:38.5%;font-size:14px">Chicago</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nyc" style="width:8px;height:8px;left:88.3%;top:38.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nyc" style="left:89.5%;top:36.5%;font-size:14px">New York</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-dc" style="width:8px;height:8px;left:84.8%;top:45.3%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-dc" style="left:86%;top:43%;font-size:14px">DC</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-mia" style="width:8px;height:8px;left:83.3%;top:83.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-mia" style="left:84.5%;top:81.0%;font-size:14px">Miami</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-atl" style="width:8px;height:8px;left:74.9%;top:66.6%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-atl" style="left:76.5%;top:64.5%;font-size:14px">Atlanta</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-msp" style="width:8px;height:8px;left:55.7%;top:32.4%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-msp" style="left:57%;top:30%;font-size:14px">Minneapolis</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nash" style="width:8px;height:8px;left:67.4%;top:56.8%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nash" style="left:69%;top:54.5%;font-size:14px">Nashville</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-orl" style="width:8px;height:8px;left:80.1%;top:75.7%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-orl" style="left:81.5%;top:73.5%;font-size:14px">Orlando</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-nola" style="width:8px;height:8px;left:63.2%;top:75.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-nola" style="left:64.5%;top:73.0%;font-size:14px">New Orleans</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-tampa" style="width:8px;height:8px;left:78.0%;top:77.1%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-tampa" style="left:74%;top:75.0%;font-size:14px">Tampa</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-pit" style="width:8px;height:8px;left:78.5%;top:41.9%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-pit" style="left:80%;top:39.5%;font-size:14px">Pittsburgh</div>
+                        <div class="mo-pin mo-c-tam" id="mo-p-det" style="width:8px;height:8px;left:72.5%;top:39.2%"><div class="ring"></div></div>
+                        <div class="mo-plbl mo-t-tam" id="mo-pl-det" style="left:74%;top:37.0%;font-size:14px">Detroit</div>
+                    </div>
+                </div>
+                <div class="mo-phase-info" id="moPhaseInfo">
+                    <div class="mo-phase-amt" id="moPhaseAmt"></div>
+                    <div class="mo-phase-name" id="moPhaseName"></div>
+                    <div class="mo-phase-sub" id="moPhaseSub"></div>
+                    <div class="mo-phase-detail" id="moPhaseDetail"></div>
+                </div>
+            </div>
+            <div class="mo-donut-side">
+                <div class="mo-donut-wrap">
+                    <svg viewBox="0 0 320 320" style="width:100%;height:100%;transform:rotate(-90deg)" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="160" cy="160" r="148" fill="none" stroke="rgba(160,145,125,0.08)" stroke-width="22" class="mo-donut-arc" id="mo-d-tam-bg"/>
+                        <circle cx="160" cy="160" r="148" fill="none" stroke="#c8b59a" stroke-width="22" stroke-dasharray="930" stroke-dashoffset="930" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(160,145,125,0.3));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-tam"/>
+                        <circle cx="160" cy="160" r="118" fill="none" stroke="rgba(230,126,34,0.06)" stroke-width="20" class="mo-donut-arc" id="mo-d-sam-bg"/>
+                        <circle cx="160" cy="160" r="118" fill="none" stroke="#e67e22" stroke-width="20" stroke-dasharray="742" stroke-dashoffset="742" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(230,126,34,0.3));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-sam"/>
+                        <circle cx="160" cy="160" r="88" fill="none" stroke="rgba(243,156,18,0.06)" stroke-width="18" class="mo-donut-arc" id="mo-d-som-bg"/>
+                        <circle cx="160" cy="160" r="88" fill="none" stroke="#f39c12" stroke-width="18" stroke-dasharray="553" stroke-dashoffset="553" stroke-linecap="round" style="filter:drop-shadow(0 0 8px rgba(243,156,18,0.4));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-som"/>
+                        <circle cx="160" cy="160" r="55" fill="none" stroke="rgba(52,211,153,0.06)" stroke-width="16" class="mo-donut-arc" id="mo-d-lam-bg"/>
+                        <circle cx="160" cy="160" r="55" fill="none" stroke="#34d399" stroke-width="16" stroke-dasharray="346" stroke-dashoffset="346" stroke-linecap="round" style="filter:drop-shadow(0 0 10px rgba(52,211,153,0.5));transition:stroke-dashoffset 1.5s ease" class="mo-donut-arc" id="mo-d-lam"/>
+                    </svg>
+                    <div class="mo-donut-center">
+                        <!-- Q-tag removed -->
+                        <div class="mo-dc-label" id="moCLabel" style="color:#34d399"></div>
+                        <div class="mo-dc-sub" id="moCSub"></div>
+                    </div>
+                </div>
+                <div class="mo-legend">
+                    <div class="mo-leg" id="mo-leg-tam"><div class="mo-ld" style="background:#c8b59a"></div><span style="font-size:24px;color:#c8b59a;font-weight:700">TAM $15.8B</span></div>
+                    <div class="mo-leg" id="mo-leg-sam"><div class="mo-ld" style="background:#e67e22"></div><span style="font-size:24px;color:#e67e22;font-weight:700">SAM $6.3M</span></div>
+                    <div class="mo-leg" id="mo-leg-som"><div class="mo-ld" style="background:#f39c12"></div><span style="font-size:24px;color:#f39c12;font-weight:700">SOM $1.6M</span></div>
+                    <div class="mo-leg" id="mo-leg-lam"><div class="mo-ld" style="background:#34d399"></div><span style="font-size:24px;color:#34d399;font-weight:700">LAM $121K</span></div>
+                </div>
+                <!-- stat block removed -->
+                <!-- Revenue Tier Table: Sonar (70%) | Organizer (30%) -->
+                <div class="mo-rev-table" id="moRevTable">
+                    <div class="mo-rev-header" id="moRevHeader">
+                        <div style="width:12px;flex-shrink:0"></div>
+                        <div style="flex:0.6"></div>
+                        <div style="flex:1;text-align:center"><span>SONAR (70%)</span></div>
+                        <div style="flex:1;text-align:center"><span>ORGANIZER (30%)</span></div>
+                    </div>
+                    <div class="mo-rev-row" id="moRevLam">
+                        <div class="rv-dot" style="background:#34d399"></div>
+                        <div class="rv-tier" style="color:#34d399">LAM</div>
+                        <div class="rv-conv" style="color:#34d399">$85K</div>
+                        <div class="rv-corr" style="color:#34d399">$36K</div>
+                    </div>
+                    <div class="mo-rev-row" id="moRevSom">
+                        <div class="rv-dot" style="background:#f39c12"></div>
+                        <div class="rv-tier" style="color:#f39c12">SOM</div>
+                        <div class="rv-conv" style="color:#f39c12">$1.12M</div>
+                        <div class="rv-corr" style="color:#f39c12">$482K</div>
+                    </div>
+                    <div class="mo-rev-row" id="moRevSam">
+                        <div class="rv-dot" style="background:#e67e22"></div>
+                        <div class="rv-tier" style="color:#e67e22">SAM</div>
+                        <div class="rv-conv" style="color:#e67e22">$4.43M</div>
+                        <div class="rv-corr" style="color:#e67e22">$1.90M</div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== SLIDE 6: COMPETITION ========== -->
+    <div class="slide" id="s6">
+        <canvas id="c6"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.72)"></div>
+        <div class="content">
+            <div class="tag">SONAR CONVENTIONS // COMPETITIVE LANDSCAPE</div>
+            <h1 class="anim orange" data-s="6" data-st="0" style="font-size:48px;margin-bottom:2px;">Competition</h1>
+            <p class="sub anim" data-s="6" data-st="0" style="font-size:22px;margin-bottom:0">Feature comparison &amp; market positioning</p>
+            <div class="anim" data-s="6" data-st="1" style="margin-top:8px">
+                <div style="border-radius:10px;border:1px solid rgba(230,126,34,0.15);background:rgba(16,14,12,0.7);overflow:hidden;max-width:900px;margin:0 auto">
+                    <table class="comp-table">
+                        <thead><tr>
+                            <th style="text-align:left;padding-left:14px;width:15%">Platform</th>
+                            <th>Msg</th>
+                            <th>Network</th>
+                            <th>Ads</th>
+                            <th>Swag</th>
+                            <th>365-Day</th>
+                            <th class="hl-col">Proximity</th>
+                            <th class="hl-col"><img src="Social.png" width="36" height="36" style="display:block;margin:0 auto;mix-blend-mode:screen;" title="Sonar Social"></th>
+                            <th class="hl-col">Net Intel</th>
+                        </tr></thead>
+                        <tbody>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=cvent.com&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>Cvent</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td>
+                                <td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=whova.com&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>Whova</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td>
+                                <td><span class="cp">~</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=bizzabo.com&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>Bizzabo</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=eventmobi.com&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>EventMobi</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td>
+                                <td><span class="cp">~</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=brella.io&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>Brella</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="cp">~</span></td><td><span class="cx">&#x2717;</span></td>
+                                <td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr>
+                                <td class="plat-cell"><img src="https://www.google.com/s2/favicons?domain=swapcard.com&amp;sz=32" width="20" height="20" style="border-radius:2px"><span>Swapcard</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td><td><span class="ck">&#x2713;</span></td>
+                                <td><span class="ck">&#x2713;</span></td><td><span class="cx">&#x2717;</span></td><td><span class="cx">&#x2717;</span></td>
+                            <td><span class="cx">&#x2717;</span></td>
+                            </tr>
+                            <tr class="sonar-row">
+                                <td class="plat-cell"><img src="Conventions.png" width="20" height="20" style="mix-blend-mode:screen;border-radius:2px;transform:scale(1.4)"><span style="color:#e67e22;font-weight:700">Sonar</span></td>
+                                <td><span class="sk">&#x2713;</span></td><td><span class="sk">&#x2713;</span></td><td><span class="sk">&#x2713;</span></td><td><span class="sk">&#x2713;</span></td>
+                                <td><span class="sk">&#x2713;</span></td><td><span class="sk">&#x2713;</span></td><td><span class="sk">&#x2713;</span></td>
+                            <td><span class="sk">&#x2713;</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DIVIDER: EXCLUSIVE LAYER -->
+            <div class="anim" data-s="6" data-st="2" style="display:flex;align-items:center;gap:12px;max-width:900px;margin:4px auto 0;width:100%">
+                <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(230,126,34,0.2),transparent)"></div>
+                <div class="mono" style="font-size:20px;letter-spacing:3px;color:#e67e22;white-space:nowrap">SONAR-EXCLUSIVE NETWORK INTELLIGENCE LAYER</div>
+                <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(230,126,34,0.2),transparent)"></div>
+            </div>
+
+            <!-- MOAT STRIP: Attendee + Vendor Intel -->
+            <div class="anim" data-s="6" data-st="3" style="display:flex;gap:14px;max-width:900px;margin:4px auto 0;width:100%">
+                <!-- Attendee Intelligence -->
+                <div style="flex:1;background:rgba(16,14,12,0.7);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,#3b82f6,#60a5fa)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+                        
+                        <span style="font-size:20px;font-weight:700;color:#60a5fa">Attendee Intelligence</span>
+                    </div>
+                    <ul style="list-style:none;padding:0;margin:0 0 8px 0">
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Cross-event memory</strong> &mdash; your graph persists event to event</li>
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Warm faces</strong> surfaced live on the map when you arrive</li>
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Relationship depth</strong> scoring: acquaintance &#x2192; strong tie</li>
+                    </ul>
+                    
+                </div>
+                <!-- Vendor Intelligence -->
+                <div style="flex:1;background:rgba(16,14,12,0.7);border:1px solid rgba(230,126,34,0.12);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,#e67e22,#f39c12)"></div>
+                    <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+                        
+                        <span style="font-size:20px;font-weight:700;color:#e67e22">Vendor Intelligence</span>
+                    </div>
+                    <ul style="list-style:none;padding:0;margin:0 0 8px 0">
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Booth funnel</strong> &mdash; visits &#x2192; handshakes &#x2192; returnees &#x2192; customers</li>
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Proximity pings</strong> when qualified buyers approach your booth</li>
+                        <li style="font-size:18px;color:#d4c4b0;line-height:1.8;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#c8a570;font-weight:700">&#x203A;</span><strong style="color:#c8b59a">Ranked lead export</strong> to Salesforce / HubSpot with dwell scores</li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <style>
+        /* === FEATURE TABLE === */
+        .comp-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .comp-table th {
+            font-size:16px; color: #c8a570; text-transform: uppercase;
+            letter-spacing: 1px; padding: 10px 4px; font-weight: 600;
+            text-align: center; font-family: 'Roboto Mono', monospace;
+            border-bottom: 2px solid rgba(230,126,34,0.2);
+        }
+        .comp-table td {
+            padding: 9px 6px; text-align: center;
+            border-bottom: 1px solid rgba(60,50,40,0.25);
+        }
+        .comp-table tbody tr:hover { background: rgba(230,126,34,0.04); }
+        .plat-cell {
+            display: flex; align-items: center; gap: 8px;
+            text-align: left !important; padding-left: 14px !important;
+            font-weight: 600; font-size:20px; color: #ece7e0;
+        }
+        .hl-col { color: #e67e22 !important; }
+        .ck { color: #34d399; font-size:26px; }
+        .cx { color: #ff4136; font-size:22px; font-weight: 700; text-shadow: 0 0 8px rgba(255,65,54,0.6), 0 0 16px rgba(255,65,54,0.3); }
+        .cp { color: #f39c12; font-size:22px; }
+        .sk { color: #ffb347; font-size:30px; font-weight: 900; text-shadow: 0 0 12px rgba(255,179,71,0.8), 0 0 24px rgba(255,179,71,0.5), 0 0 36px rgba(255,179,71,0.3); }
+        .sonar-row { background: rgba(230,126,34,0.06) !important; }
+        .sonar-row td { border-bottom: none; }
+</style>
+
+    <!-- ========== SLIDE 7: FOUNDERS ========== -->
+    <div class="slide" id="s7">
+        <canvas id="c7"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.7)"></div>
+        <div class="content" style="justify-content:center;align-items:center">
+            <div class="tag" style="text-align:center">SONAR CONVENTIONS // THE TEAM</div>
+            <h1 class="anim orange" data-s="7" data-st="0" style="text-align:center">The Founders</h1>
+            <div style="display:flex;gap:40px;margin:auto 0;max-width:1100px">
+                <!-- MANISHA CARD -->
+                <div class="card anim" data-s="7" data-st="1" style="flex:1;padding:32px 28px;text-align:center">
+                    <img src="Manisha_F.jpg" alt="Manisha"
+                        style="width:120px;height:120px;border-radius:50%;object-fit:cover;object-position:center 15%;margin:0 auto 14px;display:block;border:3px solid rgba(230,126,34,0.3)">
+                    <div style="font-size:38px;font-weight:700;color:#e67e22;margin-bottom:4px">Manisha Merchant, <span
+                            style="font-size:28px;font-weight:400;color:#c8b59a">JD/MBA</span></div>
+                    <div style="font-size:24px;color:#c8b59a;margin-bottom:14px">Co-Founder &amp; CEO</div>
+                    <div style="font-size:22px;color:#d4c4b0;line-height:1.5;margin-bottom:16px">Strategic vision,
+                        partnerships &amp; go-to-market execution</div>
+                    <!-- Credibility bullets -->
+                    <div style="text-align:left;display:flex;flex-direction:column;gap:10px;flex:1">
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(230,126,34,0.12);border-radius:8px;padding:10px 14px">
+                            <span style="font-size:32px">⚖️</span>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">20+ Years Executive Legal
+                                    Leadership</div>
+                                <div style="font-size:19px;color:#917f6e;margin-top:2px">C-Suite counsel across banking
+                                    &amp; financial services</div>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(230,126,34,0.12);border-radius:8px;padding:10px 14px">
+                            <span style="font-size:32px">🏛️</span>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">EVP &amp; Chief Legal Officer
+                                </div>
+                                <div
+                                    style="font-size:19px;color:#917f6e;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                                    <img src="https://www.google.com/s2/favicons?domain=cbcal.com&sz=32" width="14"
+                                        height="14" style="border-radius:2px" alt="">
+                                    <img src="https://www.google.com/s2/favicons?domain=bancofcal.com&sz=32" width="14"
+                                        height="14" style="border-radius:2px" alt="">
+                                    <img src="https://www.google.com/s2/favicons?domain=unionbank.com&sz=32" width="14"
+                                        height="14" style="border-radius:2px" alt="">
+                                    <span>CA Bank of Commerce, Banc of CA, Union Bank</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(230,126,34,0.12);border-radius:8px;padding:10px 14px">
+                            <span style="font-size:32px">🏦</span>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">Major Institution Experience
+                                </div>
+                                <div
+                                    style="font-size:19px;color:#917f6e;margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                                    <img src="https://www.google.com/s2/favicons?domain=jpmorganchase.com&sz=32"
+                                        width="14" height="14" style="border-radius:2px" alt="">
+                                    <img src="https://www.google.com/s2/favicons?domain=wellsfargo.com&sz=32" width="14"
+                                        height="14" style="border-radius:2px" alt="">
+                                    <span>JPMorgan Chase (WaMu) &amp; Wells Fargo (Wachovia)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- JON CARD -->
+                <div class="card anim" data-s="7" data-st="1" style="flex:1;padding:32px 28px;text-align:center">
+                    <img src="-3009660195602380892.jpg" alt="Jon"
+                        style="width:120px;height:120px;border-radius:50%;object-fit:cover;margin:0 auto 14px;display:block;border:3px solid rgba(243,156,18,0.3)">
+                    <div style="font-size:38px;font-weight:700;color:#f39c12;margin-bottom:4px">Jon Cantlo,<br><span
+                            style="font-size:28px;font-weight:400;color:#c8b59a">MBA</span></div>
+                    <div style="font-size:24px;color:#c8b59a;margin-bottom:14px">Co-Founder &amp; President</div>
+                    <div style="font-size:22px;color:#d4c4b0;line-height:1.5;margin-bottom:16px">Technical architecture
+                        &amp; full-stack product development</div>
+                    <!-- Credibility bullets -->
+                    <div style="text-align:left;display:flex;flex-direction:column;gap:10px;flex:1">
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(243,156,18,0.12);border-radius:8px;padding:10px 14px">
+                            <span style="font-size:32px">🛠️</span>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">Full-Stack Builder &amp; Tech
+                                    Lead</div>
+                                <div style="font-size:19px;color:#917f6e;margin-top:2px">Built Sonar platform
+                                    end-to-end: React Native, Firebase, AI/ML</div>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(243,156,18,0.12);border-radius:8px;padding:10px 14px">
+                            <div style="display:flex;align-items:center;justify-content:center;width:22px">
+                                <img src="https://www.google.com/s2/favicons?domain=primevideo.com&sz=32" width="18"
+                                    height="18" style="border-radius:2px" alt="">
+                            </div>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">Amazon Prime Video &amp; Consumer</div>
+                                <div style="font-size:19px;color:#917f6e;margin-top:2px">Tech Recruiting Leadership &mdash; helped launch Prime Video as its own division</div>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;align-items:center;gap:10px;background:rgba(20,18,16,0.8);border:1px solid rgba(243,156,18,0.12);border-radius:8px;padding:10px 14px">
+                            <span style="font-size:32px">🎪</span>
+                            <div>
+                                <div style="font-size:22px;font-weight:600;color:#e0d5c7">Event Venue General Manager</div>
+                                <div style="font-size:19px;color:#917f6e;margin-top:2px">Operational experience &mdash; 150+ staff, 1,500+ private events</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 8: TRACTION & TECH ========== -->
+    <div class="slide" id="s8">
+        <canvas id="c8"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.65)"></div>
+        <div class="content">
+            <div class="tag">SONAR CONVENTIONS // TRACTION &amp; TECHNOLOGY</div>
+
+            <!-- TOP: Traction — single advisory network card -->
+            <h1 class="anim orange" data-s="8" data-st="0" style="font-size:48px;margin-bottom:6px">Traction</h1>
+            <div class="anim" data-s="8" data-st="1" style="display:flex;gap:14px">
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #5eead4">
+                    <div class="ct" style="font-size:24px">&#x1F4CB; Validated With</div>
+                    <div class="cb" style="font-size:20px"><ul style="margin:0;padding-left:16px;list-style:disc"><li>Chairman of a Public International Auto Tech Firm</li><li>Board Members of a publicly traded national bank</li><li>Executive of a Publicly Traded Company</li><li>6 Chief Legal Officers across public &amp; private firms</li><li>Investors, Founders &amp; Operators</li></ul></div>
+                </div>
+            </div>
+
+            <!-- MIDDLE: Pre-LAM badge (no bullet) -->
+            <div class="anim" data-s="8" data-st="2" style="margin:20px 0">
+                <div style="display:flex;align-items:center;justify-content:center;background:rgba(16,14,12,0.7);border:1px solid rgba(94,234,212,0.2);border-radius:10px;padding:16px 40px;gap:20px">
+                    <div style="text-align:center">
+                        <div style="font-size:24px;font-weight:700;color:#5eead4;letter-spacing:2px">PRE-LAM</div>
+                        <div class="mono dim" style="font-size:18px;margin-top:4px">Q1 2026 &mdash; Current Phase</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM: Technology (aligned with JC script) -->
+            <h2 class="anim amber" data-s="8" data-st="3" style="font-size:40px;margin-bottom:6px">&#x1F6E0; Technology</h2>
+            <div class="anim" data-s="8" data-st="3" style="display:flex;gap:14px;flex:1">
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #34d399;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">Convention App</div>
+                    <div class="cb" style="font-size:20px;flex:1">Cross-platform React Native app, built and in testing. Real-time proximity map, booth discovery, and attendee matching.</div>
+                </div>
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #34d399;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">Computer Vision Floor Mapping</div>
+                    <div class="cb" style="font-size:20px;flex:1">Converts any venue blueprint into a geo-anchored digital layer with polygon mapping for zones, booths, and amenities.</div>
+                </div>
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #34d399;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">Digital Real Estate Layer</div>
+                    <div class="cb" style="font-size:20px;flex:1">Tiered booth monetization engine &mdash; basic, pro, and premium placements with real-time ad space and sponsor visibility.</div>
+                </div>
+            </div>
+            <div class="anim" data-s="8" data-st="3" style="display:flex;gap:14px;margin-top:10px;flex:1">
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #e67e22;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">Frontend: React Native + Expo</div>
+                    <div class="cb" style="font-size:20px;flex:1">File-based routing, NativeWind styling, satellite-to-floor plan map transitions, and interactive booth overlays.</div>
+                </div>
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #f39c12;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">Backend: Firebase + Cloud Functions</div>
+                    <div class="cb" style="font-size:20px;flex:1">Real-time Firestore powering proximity matching, geohash detection, and venue check-in management.</div>
+                </div>
+                <div class="card" style="flex:1;padding:18px;border-left:3px solid #e67e22;display:flex;flex-direction:column">
+                    <div class="ct" style="font-size:24px">AI &amp; Machine Learning Pipeline</div>
+                    <div class="cb" style="font-size:20px;flex:1">ML pipeline in active training &mdash; building the intelligent matching engine that scores vendor-attendee fit in real time.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 9: THE ASK ========== -->
+    <div class="slide" id="s9">
+        <canvas id="c9"></canvas>
+        <div class="overlay" style="background:rgba(10,10,12,0.75)"></div>
+        <div class="content" style="align-items:center;justify-content:center;text-align:center">
+            <div class="tag anim" data-s="9" data-st="0">SONAR CONVENTIONS // THE ASK</div>
+            <h1 class="anim amber" data-s="9" data-st="0" style="font-size:66px">Our Ask</h1>
+            <div style="display:flex;gap:30px;margin-top:30px;max-width:800px">
+                <div class="card anim" data-s="9" data-st="1"
+                    style="flex:1;padding:36px;text-align:center;border-top:3px solid #f39c12">
+                    <div
+                        style="font-size:24px;color:#c8b59a;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">
+                        Patent &amp; Trademark Protection</div>
+                    <div style="font-size:58px;font-weight:900;color:#f39c12">$5,000</div>
+                    <div class="cb" style="margin-top:16px;font-size:22px;line-height:1.8">
+                        Provisional patent filing<br>
+                        Trademark registration<br>
+                        Legal foundation for the platform
+                    </div>
+                </div>
+                <div class="card anim" data-s="9" data-st="2"
+                    style="flex:1;padding:36px;text-align:center;border-top:3px solid #e67e22">
+                    <div
+                        style="font-size:24px;color:#c8b59a;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px">
+                        Strategic Introductions</div>
+                    <div style="font-size:58px;font-weight:900;color:#e67e22">Priceless</div>
+                    <div class="cb" style="margin-top:16px;font-size:22px;line-height:1.8">
+                        Convention center operators<br>
+                        Event industry decision-makers<br>
+                        Pilot venue partnerships
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pre-LAM Timeline spanning both cards -->
+            <div class="anim" data-s="9" data-st="3" style="margin-top:24px;max-width:800px;width:100%">
+                <div style="display:flex;align-items:center;background:rgba(16,14,12,0.7);border:1px solid rgba(230,126,34,0.12);border-radius:10px;padding:12px 24px">
+                    <div style="flex:0 0 auto;margin-right:16px">
+                        <div class="mono dim" style="font-size:16px">NOW</div>
+                        <div style="font-size:22px;font-weight:700;color:#5eead4">Pre-LAM</div>
+                    </div>
+                    <div style="flex:1;height:3px;background:linear-gradient(90deg,#5eead4,#34d399);border-radius:2px;position:relative">
+                        <div style="position:absolute;right:-4px;top:-3px;width:9px;height:9px;background:#34d399;border-radius:50;border:2px solid #1a1816"></div>
+                    </div>
+                    <div style="flex:0 0 auto;margin-left:16px;text-align:right">
+                        <div class="mono dim" style="font-size:16px">NEXT</div>
+                        <div class="bold" style="font-size:22px;color:#34d399">LAM &mdash; Launch</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="anim" data-s="9" data-st="3" style="margin-top:16px">
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SLIDE 10: SONAR LIVE ORIGIN (CINEMATIC) ========== -->
+    <div class="slide" id="s10">
+        <canvas id="c10"></canvas>
+        <!-- Paint splatter canvas background -->
+        <div
+            style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;overflow:hidden;pointer-events:none">
+            <!-- Drip columns -->
+            <div class="drip" style="left:8%;animation-delay:0s;width:3px"></div>
+            <div class="drip" style="left:25%;animation-delay:1.4s;width:4px"></div>
+            <div class="drip" style="left:55%;animation-delay:0.6s;width:3px"></div>
+            <div class="drip" style="left:78%;animation-delay:2.0s;width:5px"></div>
+            <div class="drip" style="left:92%;animation-delay:0.9s;width:2px"></div>
+            <!-- Large paint splatters -->
+            <div class="paint-blob"
+                style="top:5%;left:3%;width:280px;height:200px;background:radial-gradient(ellipse at 40% 50%,rgba(43,212,225,0.25),transparent 70%);transform:rotate(-15deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:60%;right:5%;width:350px;height:250px;background:radial-gradient(ellipse at 60% 40%,rgba(76,221,134,0.2),transparent 65%);transform:rotate(10deg)">
+            </div>
+            <div class="paint-blob"
+                style="bottom:5%;left:10%;width:200px;height:300px;background:radial-gradient(ellipse at 50% 60%,rgba(43,212,225,0.18),transparent 70%);transform:rotate(-8deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:15%;right:15%;width:240px;height:180px;background:radial-gradient(ellipse at 30% 70%,rgba(76,221,134,0.22),transparent 65%);transform:rotate(25deg)">
+            </div>
+            <div class="paint-blob"
+                style="top:40%;left:20%;width:160px;height:160px;background:radial-gradient(circle,rgba(43,212,225,0.3),transparent 60%)">
+            </div>
+            <div class="paint-blob"
+                style="bottom:20%;right:25%;width:200px;height:140px;background:radial-gradient(ellipse,rgba(90,230,194,0.2),transparent 65%);transform:rotate(-20deg)">
+            </div>
+            <!-- Bright glowing streaks -->
+            <div class="streak"
+                style="top:12%;left:-5%;width:60%;height:4px;transform:rotate(-18deg);background:linear-gradient(90deg,transparent,#2bd4e1,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="top:35%;right:-5%;width:50%;height:3px;transform:rotate(12deg);background:linear-gradient(90deg,transparent,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="bottom:25%;left:10%;width:70%;height:5px;transform:rotate(-8deg);background:linear-gradient(90deg,transparent,#2bd4e1,#4cdd86,#2bd4e1,transparent)">
+            </div>
+            <div class="streak"
+                style="top:55%;right:0;width:40%;height:2px;transform:rotate(22deg);background:linear-gradient(90deg,transparent,rgba(43,212,225,0.8),transparent)">
+            </div>
+            <div class="streak"
+                style="bottom:40%;left:-3%;width:45%;height:3px;transform:rotate(-30deg);background:linear-gradient(90deg,transparent,#4cdd86,transparent)">
+            </div>
+            <div class="streak"
+                style="top:75%;left:30%;width:55%;height:2px;transform:rotate(5deg);background:linear-gradient(90deg,transparent,rgba(76,221,134,0.6),transparent)">
+            </div>
+            <!-- Small intense spots -->
+            <div
+                style="position:absolute;top:18%;left:22%;width:12px;height:12px;border-radius:50%;background:#2bd4e1;box-shadow:0 0 20px #2bd4e1,0 0 40px rgba(43,212,225,0.4);opacity:0.6">
+            </div>
+            <div
+                style="position:absolute;top:72%;right:18%;width:8px;height:8px;border-radius:50%;background:#4cdd86;box-shadow:0 0 15px #4cdd86,0 0 30px rgba(76,221,134,0.4);opacity:0.5">
+            </div>
+            <div
+                style="position:absolute;bottom:30%;left:40%;width:10px;height:10px;border-radius:50%;background:#2bd4e1;box-shadow:0 0 25px #2bd4e1;opacity:0.4">
+            </div>
+            <div
+                style="position:absolute;top:45%;right:35%;width:6px;height:6px;border-radius:50%;background:#4cdd86;box-shadow:0 0 18px #4cdd86;opacity:0.5">
+            </div>
+            <div
+                style="position:absolute;top:8%;right:8%;width:14px;height:14px;border-radius:50%;background:#5ae6c2;box-shadow:0 0 30px #5ae6c2;opacity:0.35">
+            </div>
+        </div>
+        <div class="overlay" style="background:rgba(10,10,12,0.45)"></div>
+
+        <!-- MAIN CONTENT -->
+        <div class="content" style="align-items:center;justify-content:center;text-align:center;position:relative">
+
+            <!-- Title text (glitch decode) -->
+            <div id="s12-text" style="opacity:0;z-index:8;position:relative;transition:none">
+                <div style="font-family:'Roboto Mono',monospace;font-size:18px;color:#2bd4e1;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px"
+                    id="s12-tag">SONAR LIVE // WHERE IT ALL BEGAN</div>
+                <h1 style="font-size:64px;background:linear-gradient(135deg,#2bd4e1,#4cdd86);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text"
+                    id="s12-title">The Origin</h1>
+                <p style="text-align:center;max-width:500px;margin:4px auto 0;font-size:24px;color:#5ae6c2;font-weight:300"
+                    id="s12-sub">The social engine that started it all</p>
+            </div>
+            <!-- Pixel phone (starts as tiny phone, expands) -->
+            <div id="s12-phone"
+                style="opacity:0;transform:scale(0.05);transition:all 1.2s cubic-bezier(0.16,1,0.3,1);position:relative;z-index:7;margin-top:10px">
+                <div
+                    style="height:min(70vh, 840px);aspect-ratio:9/19.5;border-radius:28px;border:3px solid rgba(43,212,225,0.5);background:#000;overflow:hidden;box-shadow:0 0 60px rgba(43,212,225,0.25),0 0 120px rgba(76,221,134,0.1),0 20px 60px rgba(0,0,0,0.6),inset 0 0 0 10px #000;position:relative;clip-path:inset(0 round 28px)">
+                    <div
+                        style="position:absolute;top:12px;left:50%;transform:translateX(-50%);width:10px;height:10px;background:#111;border-radius:50%;border:1px solid rgba(255,255,255,0.08);z-index:2">
+                    </div>
+                    <video id="s12-video" loop muted playsinline
+                        style="width:100%;height:100%;object-fit:cover;background:#000;border-radius:22px;clip-path:inset(2px round 22px)">
+                        <source src="3 Revised.mp4" type="video/mp4">
+                    </video>
+                    <div
+                        style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:90px;height:4px;background:rgba(255,255,255,0.3);border-radius:2px;z-index:2">
+                    </div>
+                </div>
+                <div
+                    style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120%;height:120%;border-radius:50%;background:radial-gradient(circle,rgba(43,212,225,0.08),rgba(76,221,134,0.04) 40%,transparent 70%);z-index:-1;animation:originPulse 4s ease-in-out infinite">
+                </div>
+            </div>
+            <p id="s12-footer" class="mono"
+                style="opacity:0;font-size:18px;color:rgba(43,212,225,0.5);margin-top:12px;letter-spacing:3px;transition:opacity 1s ease">
+                SONAR LIVE &bull; ALPHA BUILD &bull; 2026</p>
+        </div>
+    </div>
+    <style>
+        .drip {
+            position: absolute;
+            top: -20%;
+            height: 140%;
+            border-radius: 0 0 4px 4px;
+            background: linear-gradient(180deg, transparent 0%, rgba(43, 212, 225, 0.4) 30%, rgba(76, 221, 134, 0.3) 60%, transparent 100%);
+            animation: dripDown 6s ease-in-out infinite;
+            filter: blur(1px);
+        }
+
+        @keyframes dripDown {
+            0% {
+                transform: translateY(-100%);
+                opacity: 0
+            }
+
+            10% {
+                opacity: 0.6
+            }
+
+            80% {
+                opacity: 0.3
+            }
+
+            100% {
+                transform: translateY(100%);
+                opacity: 0
+            }
+        }
+
+        .splash {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(43, 212, 225, 0.15), rgba(76, 221, 134, 0.08) 50%, transparent 70%);
+            animation: splashPulse 5s ease-in-out infinite;
+            filter: blur(8px);
+        }
+
+        @keyframes splashPulse {
+
+            0%,
+            100% {
+                transform: scale(0.8);
+                opacity: 0.3
+            }
+
+            50% {
+                transform: scale(1.3);
+                opacity: 0.7
+            }
+        }
+
+        @keyframes originPulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1
+            }
+        }
+
+        /* === PAINT CANVAS STYLES === */
+        .paint-blob {
+            position: absolute;
+            filter: blur(15px);
+            opacity: 0.8;
+            animation: blobPulse 8s ease-in-out infinite;
+        }
+
+        .streak {
+            position: absolute;
+            opacity: 0.25;
+            filter: blur(1px);
+            box-shadow: 0 0 15px rgba(43, 212, 225, 0.3);
+            animation: streakGlow 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes blobPulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1) rotate(var(--r, 0deg))
+            }
+
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1) rotate(var(--r, 0deg))
+            }
+        }
+
+        @keyframes streakGlow {
+            0% {
+                opacity: 0.15;
+                filter: blur(1px)
+            }
+
+            100% {
+                opacity: 0.35;
+                filter: blur(0.5px)
+            }
+        }
+
+        /* === GLITCH TEXT === */
+        @keyframes glitchIn {
+            0% {
+                clip-path: inset(0 100% 0 0);
+                opacity: 0;
+                transform: translateX(-20px)
+            }
+
+            50% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateX(5px)
+            }
+
+            60% {
+                transform: translateX(-3px)
+            }
+
+            70% {
+                transform: translateX(2px)
+            }
+
+            100% {
+                clip-path: inset(0 0 0 0);
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        .s11-glitch-in {
+            animation: glitchIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards
+        }
+    </style>
+
+    <!-- ========== NAV ========== -->
+    <!-- nav hint removed for presentation -->
+    <!-- slide counter removed -->
+
+    <script>
+        var cur = 1, maxStages = {}, stageAt = {};
+        for (var i = 1; i <= 11; i++) { maxStages[i] = 0; stageAt[i] = 0 }
+
+        // Count max stages per slide
+        var els = document.querySelectorAll('.anim');
+        for (var i = 0; i < els.length; i++) {
+            var s = parseInt(els[i].getAttribute('data-s'));
+            var st = parseInt(els[i].getAttribute('data-st'));
+            if (s && !isNaN(st)) { if (st > maxStages[s]) maxStages[s] = st }
+        }
+        // Slide 5: ensure GTM phases can animate (5 stages)
+        // Slide 5 is fully controlled by donut engine, not stage system
+
+        function showSlide(n) {
+            if (n < 1 || n > 10) return;
+            var slides = document.querySelectorAll('.slide');
+            for (var i = 0; i < slides.length; i++)slides[i].className = 'slide';
+            document.getElementById('s' + n).className = 'slide active';
+            cur = n; stageAt[n] = 0;
+            // slide counter removed
+            // Reset all anims for this slide
+            var anims = document.querySelectorAll('.anim[data-s="' + n + '"]');
+            for (var i = 0; i < anims.length; i++)anims[i].classList.remove('on');
+            // Auto-show stage 0 after brief delay
+            setTimeout(function () { advanceSlide() }, 400);
+            if (n === 1) {
+                var el = document.getElementById('s1-connections');
+                if (el) { el.style.opacity = 1; el.style.pointerEvents = 'auto'; }
+                // Reset "entire" word animation
+                var entireEl = document.getElementById('s1-entire');
+                if (entireEl) { entireEl.style.maxWidth = '0'; entireEl.style.opacity = '0'; }
+                // Reset streak animation
+                var streaks = document.querySelectorAll('.s1-streak');
+                for (var i = 0; i < streaks.length; i++) {
+                    streaks[i].style.animation = 'none';
+                    streaks[i].offsetHeight;
+                    streaks[i].style.animation = '';
+                }
+                // Expand "entire" after streak finishes (1.5s delay + 2.5s animation = 4s)
+                setTimeout(function () {
+                    var e = document.getElementById('s1-entire');
+                    if (e) {
+                        e.style.maxWidth = '130px';
+                        e.style.opacity = '1';
+                        e.style.color = '#4cdd86';
+                        e.style.textShadow = '0 0 12px rgba(76,221,134,0.6)';
+                    }
+                }, 4200);
+                // Fade "entire" back to tan
+                setTimeout(function () {
+                    var e = document.getElementById('s1-entire');
+                    if (e) { e.style.color = '#c8b59a'; e.style.textShadow = 'none'; }
+                }, 5500);
+            }
+            // Slide 5: market opportunity (donut gram) init
+            if (n === 5) { resetMarketSlide(); }
+            initCanvas(n);
+            manageVideos(n);
+            // Slide 4 & 8: reset GTM bars
+            if (n === 4 || n === 8) {
+                var slideEl = document.getElementById('s' + n);
+                var bars = slideEl.querySelectorAll('.gtm-bar');
+                for (var i = 0; i < bars.length; i++) bars[i].style.maxWidth = '0';
+            }
+            // Slide 6: reset dimmed threat cards
+            if (n === 6) {
+                var cards = document.querySelectorAll('.s7-card');
+                for (var i = 0; i < cards.length; i++) cards[i].classList.remove('dimmed');
+            }
+            // Slide 3: embedded digital layer animation — reset phases
+            if (n === 3) {
+                var dreC = document.getElementById('dre-compact');
+                var phoneC = document.getElementById('s3-phone-wrap');
+                if (dreC) { dreC.style.opacity = '1'; dreC.style.pointerEvents = 'auto'; }
+                if (phoneC) { phoneC.style.opacity = '0'; phoneC.style.pointerEvents = 'none'; }
+                var s3vid = document.getElementById('s3-phone-video'); if(s3vid){ s3vid.pause(); s3vid.currentTime=0; }
+                // DRE deferred — starts on click (stage 0 = static layout, stage 1 = animation)
+                s3DreStarted = false;
+                s3PhoneShown = false;
+            }
+            if (n !== 3) { clearCompactDRE(); }
+            // Slide 10: cinematic animation
+            if (n === 10) { setTimeout(function () { startOriginAnimation(); }, 500); }
+            if (n !== 10) { clearS11(); }
+        }
+
+        function advanceSlide() {
+            var st = stageAt[cur];
+            var anims = document.querySelectorAll('.anim[data-s="' + cur + '"][data-st="' + st + '"]');
+            for (var i = 0; i < anims.length; i++)anims[i].classList.add('on');
+            if (cur === 1) {
+                if (st === 1) { var el = document.getElementById('s1-connections'); if (el) { el.style.opacity = 0; el.style.pointerEvents = 'none'; } }
+            }
+            // Slide 3: fully controlled — click 1=DRE, click 2=phone, click 3=next
+            if (cur === 3 && st > 0) {
+                if (!s3DreStarted) {
+                    s3DreStarted = true;
+                    startCompactDRE();
+                    return;
+                }
+                if (!s3PhoneShown) {
+                    s3PhoneShown = true;
+                    var dreC = document.getElementById('dre-compact');
+                    var phoneC = document.getElementById('s3-phone-wrap');
+                    if (dreC) { dreC.style.opacity = '0'; dreC.style.pointerEvents = 'none'; }
+                    if (phoneC) { phoneC.style.opacity = '1'; phoneC.style.pointerEvents = 'auto'; }
+                    var s3vid = document.getElementById('s3-phone-video');
+                    if (s3vid) { s3vid.play(); }
+                    return;
+                }
+                showSlide(4);
+                return;
+            }
+            // Slide 5: fully controlled by donut engine
+            if (cur === 5) {
+                if (moPhase < 4) {
+                    moPhase++;
+                    goToMarket(moPhase);
+                } else {
+                    showSlide(6);
+                }
+                return;
+            }
+            // Slide 4: animate GTM bars when their stage triggers
+            if (cur === 4 && st >= 3 && st <= 5) {
+                var bars = document.querySelectorAll('.gtm-bar.anim[data-st="' + st + '"]');
+                for (var i = 0; i < bars.length; i++) bars[i].style.maxWidth = '60px';
+            }
+            // Slide 8: animate timeline bars when timeline divider appears
+            if (cur === 8 && st === 2) {
+                var s8bars = document.getElementById('s8').querySelectorAll('.gtm-bar');
+                for (var i = 0; i < s8bars.length; i++) s8bars[i].style.maxWidth = '60px';
+            }
+            // Slide 6: dim threat cards when Sonar appears
+            if (cur === 6 && st === 2) {
+                var cards = document.querySelectorAll('.s7-card');
+                for (var i = 0; i < cards.length; i++) cards[i].classList.add('dimmed');
+            }
+
+            // Slide 3: transition from DRE to phone on stage 1
+            if (cur === 3 && st === 1) {
+                var dreC = document.getElementById('dre-compact');
+                var phoneC = document.getElementById('s3-phone-wrap');
+                if (dreC) { dreC.style.opacity = '0'; dreC.style.pointerEvents = 'none'; }
+                if (phoneC) { phoneC.style.opacity = '1'; phoneC.style.pointerEvents = 'auto'; }
+                var s3vid = document.getElementById('s3-phone-video'); if(s3vid){ s3vid.currentTime=0; s3vid.play().catch(function(){}); }
+                clearCompactDRE();
+            }
+            stageAt[cur]++;
+        }
+
+        // Show a slide with ALL animations already revealed (for going back a slide)
+        function showSlideComplete(n) {
+            if (n < 1 || n > 10) return;
+            var slides = document.querySelectorAll('.slide');
+            for (var i = 0; i < slides.length; i++) slides[i].className = 'slide';
+            document.getElementById('s' + n).className = 'slide active';
+            cur = n;
+            // slide counter removed
+            // Show ALL animation stages
+            var anims = document.querySelectorAll('.anim[data-s="' + n + '"]');
+            for (var i = 0; i < anims.length; i++) anims[i].classList.add('on');
+            stageAt[n] = maxStages[n] + 1; // all stages shown
+            // Apply special slide effects in their final state
+            if (n === 1) {
+                var el = document.getElementById('s1-connections');
+                if (el) { el.style.opacity = 1; el.style.pointerEvents = 'auto'; }
+            }
+            // Slide 5: show all donut gram phases
+            if (n === 5) {
+                resetMarketSlide();
+                moPhase = 4; stageAt[5] = 999;
+                for(var mp=1;mp<=4;mp++) goToMarket(mp);
+            }
+            if (n === 6) {
+                var cards = document.querySelectorAll('.s7-card');
+                for (var i = 0; i < cards.length; i++) cards[i].classList.add('dimmed');
+            }
+            if (n === 3) {
+                // Show phone, hide DRE when showing slide 3 complete
+                var dreC = document.getElementById('dre-compact');
+                var phoneC = document.getElementById('s3-phone-wrap');
+                if (dreC) { dreC.style.opacity = '0'; dreC.style.pointerEvents = 'none'; }
+                if (phoneC) { phoneC.style.opacity = '1'; phoneC.style.pointerEvents = 'auto'; }
+                var s3vid = document.getElementById('s3-phone-video'); if(s3vid){ s3vid.currentTime=0; s3vid.play().catch(function(){}); }
+                clearCompactDRE();
+            }
+            if (n === 4 || n === 8) {
+                var slideEl = document.getElementById('s' + n);
+                var bars = slideEl.querySelectorAll('.gtm-bar');
+                for (var i = 0; i < bars.length; i++) bars[i].style.maxWidth = '60px';
+            }
+            initCanvas(n);
+            manageVideos(n);
+        }
+
+        // Reverse one animation step on the current slide
+        function reverseStep() {
+            if (stageAt[cur] <= 1) {
+                // Already at stage 0 (or 1), go back a full slide (showing it complete)
+                if (cur > 1) showSlideComplete(cur - 1);
+                return;
+            }
+            stageAt[cur]--;
+            var st = stageAt[cur];
+            // Hide elements at this stage
+            var anims = document.querySelectorAll('.anim[data-s="' + cur + '"][data-st="' + st + '"]');
+            for (var i = 0; i < anims.length; i++) anims[i].classList.remove('on');
+            // Reverse special slide effects
+            // Slide 3: reverse from phone back to DRE
+            if (cur === 3 && st === 1) {
+                var dreC = document.getElementById('dre-compact');
+                var phoneC = document.getElementById('s3-phone-wrap');
+                if (dreC) { dreC.style.opacity = '1'; dreC.style.pointerEvents = 'auto'; }
+                if (phoneC) { phoneC.style.opacity = '0'; phoneC.style.pointerEvents = 'none'; }
+                startCompactDRE();
+            }
+            if (cur === 1 && st === 1) {
+                var el = document.getElementById('s1-connections');
+                if (el) { el.style.opacity = 1; el.style.pointerEvents = 'auto'; }
+            }
+            // Slide 5: market opportunity custom reverse (donut gram)
+            if (cur === 5) {
+                if (moPhase > 0) {
+                    var targetPhase = moPhase - 1;
+                    resetMarketSlide();
+                    moPhase = targetPhase;
+                    stageAt[cur]--;
+                    for(var mp=1;mp<=moPhase;mp++) goToMarket(mp);
+                    if(moPhase===0){ document.getElementById('moPhaseInfo').classList.remove('on','us-pos'); document.getElementById('moSocalLayer').style.opacity='1'; document.getElementById('moUsLayer').style.opacity='0'; document.getElementById('moSocalInner').style.transform='scale(1.3) translate(0,0)'; }
+                    return;
+                }
+            }
+        }
+
+
+        // Go back one slide (complete state)
+        function reverseStep() {
+            if (cur > 1) showSlideComplete(cur - 1);
+        }
+
+        // Forward one step (existing logic wrapped)
+        function forwardStep() {
+            if (stageAt[cur] <= maxStages[cur]) { advanceSlide(); }
+            else { showSlide(cur + 1); }
+        }
+
+        // ===== SLIDE 12 CINEMATIC ANIMATION =====
+        var s11Timers = [];
+        function clearS11() {
+            for (var i = 0; i < s11Timers.length; i++) clearTimeout(s11Timers[i]);
+            s11Timers = [];
+            var vid = document.getElementById('s12-video');
+            if (vid) { vid.pause(); vid.currentTime = 0; }
+        }
+        function startOriginAnimation() {
+            clearS11();
+            // Reset elements
+            var phone = document.getElementById('s12-phone');
+            var text = document.getElementById('s12-text');
+            var footer = document.getElementById('s12-footer');
+            if (!phone) return;
+            phone.style.opacity = '0'; phone.style.transform = 'scale(0.05)';
+            text.style.opacity = '0';
+            footer.style.opacity = '0';
+            // Phone expand + video play (1s)
+            s11Timers.push(setTimeout(function () {
+                phone.style.opacity = '1';
+                phone.style.transform = 'scale(1)';
+                var vid = document.getElementById('s12-video');
+                if (vid) vid.play();
+            }, 1000));
+            // Text decode (2.5s)
+            s11Timers.push(setTimeout(function () {
+                text.style.opacity = '1';
+                decodeText(document.getElementById('s12-tag'), 'SONAR LIVE // WHERE IT ALL BEGAN');
+                decodeText(document.getElementById('s12-title'), 'The Origin');
+                decodeText(document.getElementById('s12-sub'), 'The social engine that started it all');
+            }, 2500));
+            // Footer fade in (3.5s)
+            s11Timers.push(setTimeout(function () {
+                footer.style.opacity = '1';
+            }, 3500));
+        }
+        function decodeText(el, finalText) {
+            if (!el) return;
+            // Invisible placeholder holds the final width; decode text overlays it
+            var parent = el.parentNode;
+            el.textContent = finalText;
+            el.style.position = 'relative';
+            // Create overlay for decode animation
+            var overlay = document.createElement('span');
+            // Copy computed styles to overlay
+            var cs = window.getComputedStyle(el);
+            overlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:' + cs.textAlign + ';font-size:' + cs.fontSize + ';font-weight:' + cs.fontWeight + ';font-family:' + cs.fontFamily + ';letter-spacing:' + cs.letterSpacing + ';text-transform:' + cs.textTransform + ';';
+            // Match gradient text if present
+            if (el.style.backgroundClip === 'text' || el.style.webkitBackgroundClip === 'text') {
+                overlay.style.background = cs.backgroundImage || cs.background;
+                overlay.style.webkitBackgroundClip = 'text';
+                overlay.style.webkitTextFillColor = 'transparent';
+                overlay.style.backgroundClip = 'text';
+            } else {
+                overlay.style.color = cs.color;
+            }
+            el.appendChild(overlay);
+            // Save original styles before hiding
+            var origColor = el.style.color;
+            var origFill = el.style.webkitTextFillColor;
+            var origPos = el.style.position;
+            // Hide original text visually but keep it for sizing
+            el.style.color = 'transparent';
+            el.style.webkitTextFillColor = 'transparent';
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$!&';
+            var iterations = 0;
+            var interval = setInterval(function () {
+                overlay.textContent = finalText.split('').map(function (c, i) {
+                    if (c === ' ') return ' ';
+                    if (i < iterations) return finalText[i];
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('');
+                iterations += 0.3125;
+                if (iterations >= finalText.length) {
+                    clearInterval(interval);
+                    // Cleanup: restore original text + styles, remove overlay
+                    el.textContent = finalText;
+                    el.style.color = origColor;
+                    el.style.webkitTextFillColor = origFill;
+                    el.style.position = origPos;
+                }
+            }, 25);
+        }
+
+
+        
+        // ===== COMPACT DRE (embedded in solution slide) =====
+        var s3DreStarted = false;
+        var s3PhoneShown = false;
+        var cDreTimers = [];
+        function clearCompactDRE() {
+            for (var i = 0; i < cDreTimers.length; i++) clearTimeout(cDreTimers[i]);
+            cDreTimers = [];
+            var floor = document.getElementById('dreCompactFloor');
+            if (floor) {
+                var booths = floor.querySelectorAll('.dre-booth');
+                for (var i = 0; i < booths.length; i++) booths[i].remove();
+                var ads = floor.querySelectorAll('.dre-ad-panel');
+                for (var i = 0; i < ads.length; i++) ads[i].remove();
+            }
+            var counter = document.getElementById('dreCompactCounter');
+            var dl = document.getElementById('dreCompactLayer');
+            if (dl) { dl.className = 'dre-digital-layer'; }
+            var sl = document.getElementById('dreCompactScan');
+            if (sl) { sl.className = 'dre-scan-line'; }
+            if (counter) { counter.textContent = ''; counter.style.opacity = '0'; }
+            var status = document.getElementById('dreCompactStatus');
+            if (status) { status.textContent = ''; status.style.opacity = '0'; }
+        }
+        function startCompactDRE() {
+            clearCompactDRE();
+            var floor = document.getElementById('dreCompactFloor');
+            if (!floor) return;
+            var counter = document.getElementById('dreCompactCounter');
+            var dl = document.getElementById('dreCompactLayer');
+            if (dl) { dl.className = 'dre-digital-layer'; }
+            var sl = document.getElementById('dreCompactScan');
+            if (sl) { sl.className = 'dre-scan-line'; }
+            var status = document.getElementById('dreCompactStatus');
+            var booths = [], adPanels = [];
+            var cols = 12, rows = 8, spacing = 52, offX = 18, offY = 18;
+            var totalBooths = cols * rows;
+            for (var r = 0; r < rows; r++) {
+                for (var c = 0; c < cols; c++) {
+                    var b = document.createElement('div');
+                    b.className = 'dre-booth';
+                    b.style.left = (offX + c * spacing) + 'px';
+                    b.style.top = (offY + r * spacing) + 'px';
+                    b.innerHTML = '<div class="dre-booth-top"></div>';
+                    floor.appendChild(b);
+                    booths.push({ el:b, col:c, row:r });
+                }
+            }
+            var indices = [];
+            for (var i = 0; i < totalBooths; i++) indices.push(i);
+            for (var i = indices.length - 1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)); var t=indices[i]; indices[i]=indices[j]; indices[j]=t; }
+            var tiers = [];
+            for (var i = 0; i < totalBooths; i++) tiers.push('basic');
+            var nPro = Math.floor(totalBooths * 0.40);
+            var nPrem = Math.floor(totalBooths * 0.25);
+            for (var i = 0; i < nPro; i++) tiers[indices[i]] = 'pro';
+            for (var i = nPro; i < nPro + nPrem; i++) tiers[indices[i]] = 'premium';
+            var adTemplates = [
+                {t:'SIGNAL',c:'\u{1F525} Live Demo!',a:'Visit',p:false},
+                {t:'SPONSOR',c:'\u2b50 Partner',a:'More',p:true},
+                {t:'BOOTH',c:'\u{1F3C6} VIP',a:'Book',p:true},
+                {t:'MATCH',c:'\u{1F3AF} For You',a:'Connect',p:false},
+                {t:'PROMO',c:'\u{1F514} Offer',a:'Claim',p:false},
+                {t:'LAUNCH',c:'\u{1F680} New!',a:'See',p:true},
+            ];
+            var adBoothIdx = [];
+            for (var i = 0; i < totalBooths; i++) { if (tiers[i]==='premium') adBoothIdx.push(i); }
+            var proIdx = [];
+            for (var i = 0; i < totalBooths; i++) { if (tiers[i]==='pro') proIdx.push(i); }
+            for (var i = proIdx.length-1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)); var t=proIdx[i]; proIdx[i]=proIdx[j]; proIdx[j]=t; }
+            for (var i = 0; i < Math.min(5, proIdx.length); i++) adBoothIdx.push(proIdx[i]);
+            adBoothIdx.forEach(function(idx, ai) {
+                var booth = booths[idx]; var tmpl = adTemplates[ai % adTemplates.length];
+                var isPrem = tiers[idx] === 'premium';
+                var panel = document.createElement('div');
+                panel.className = 'dre-ad-panel';
+                panel.style.left = (offX + booth.col * spacing - 25) + 'px';
+                panel.style.top = (offY + booth.row * spacing - 45) + 'px';
+                panel.innerHTML = '<div class="dre-ad-card ' + (isPrem?'dre-premium-ad dre-shimmer':'dre-shimmer') + '"><div class="dre-ad-title">'+tmpl.t+'</div><div class="dre-ad-content">'+tmpl.c+'</div><div class="dre-ad-cta">'+tmpl.a+'</div></div><div class="dre-ad-stem"></div>';
+                floor.appendChild(panel);
+                adPanels.push(panel);
+            });
+
+            // === FULL ANIMATION TIMELINE ===
+            // Phase 1: Deploy digital layer (0.3s)
+            cDreTimers.push(setTimeout(function() {
+                if (dl) dl.classList.add('dre-descending');
+                if (status) { status.textContent = ''; status.style.opacity = '1'; status.style.color = 'rgba(230,126,34,0.8)'; }
+            }, 300));
+            // Phase 2: Layer lands + scan line sweeps (2s)
+            cDreTimers.push(setTimeout(function() {
+                if (dl) { dl.classList.remove('dre-descending'); dl.classList.add('dre-landed'); }
+                if (sl) sl.classList.add('dre-active');
+                if (status) { status.textContent = ''; }
+            }, 2000));
+            // Phase 3: Activate booths (3.5s)
+            cDreTimers.push(setTimeout(function() {
+                if (status) { status.textContent = ''; }
+                var order = [];
+                for (var i = 0; i < totalBooths; i++) order.push(i);
+                for (var i = order.length-1; i > 0; i--) { var j=Math.floor(Math.random()*(i+1)); var t=order[i]; order[i]=order[j]; order[j]=t; }
+                var proC=0, premC=0;
+                order.forEach(function(idx, i) {
+                    cDreTimers.push(setTimeout(function() {
+                        if (tiers[idx]==='pro') { booths[idx].el.classList.add('dre-tier-pro'); proC++; }
+                        else if (tiers[idx]==='premium') { booths[idx].el.classList.add('dre-tier-premium'); premC++; }
+                        var pct = Math.round((proC+premC)/totalBooths*100);
+                        /* counter removed — only status text shown */
+                    }, i * 25));
+                });
+            }, 3500));
+            // Phase 4: Deploy ads (5.5s)
+            cDreTimers.push(setTimeout(function() {
+                if (status) { status.textContent = ''; status.style.color = '#e67e22'; }
+                adPanels.forEach(function(panel, i) {
+                    cDreTimers.push(setTimeout(function() { panel.classList.add('dre-on'); }, i * 50));
+                });
+            }, 5500));
+            // Phase 5: Final state (7s)
+            cDreTimers.push(setTimeout(function() {
+                if (status) { status.textContent = ''; status.style.color = '#34d399'; }
+                if (counter) { counter.style.color = '#f39c12'; counter.style.textShadow = '0 0 15px rgba(243,156,18,0.5)'; }
+            }, 7000));
+        }
+
+        var lock = false;
+        document.body.onclick = function () {
+            if (lock) return; lock = true; setTimeout(function () { lock = false }, 400);
+            forwardStep();
+        };
+
+        document.onkeydown = function (e) {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                forwardStep();
+            }
+            else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+                e.preventDefault();
+                reverseStep();
+            }
+            else if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+                e.preventDefault();
+                showSlide(cur + 1);
+            }
+            else if (e.key === 'p' || e.key === 'P') {
+                e.preventDefault();
+                document.body.classList.toggle('projector-mode');
+                var pInd = document.getElementById('proj-indicator');
+                if (pInd) { pInd.style.opacity = document.body.classList.contains('projector-mode') ? '1' : '0'; setTimeout(function(){ pInd.style.opacity = '0'; }, 2000); }
+            }
+            else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                if (cur > 1) showSlideComplete(cur - 1);
+            }
+        };
+
+        // ===== CANVAS ANIMATIONS =====
+        var ctxs = {};
+        var animPaused = false;
+        function initCanvas(n) {
+            var cv = document.getElementById('c' + n);
+            if (!cv) return;
+            cv.width = window.innerWidth; cv.height = window.innerHeight;
+            ctxs[n] = cv.getContext('2d');
+        }
+        // Debounced resize for performance
+        var resizeTimer;
+        window.onresize = function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(function() {
+                for (var n = 1; n <= 11; n++) {
+                    var cv = document.getElementById('c' + n);
+                    if (cv) { cv.width = window.innerWidth; cv.height = window.innerHeight }
+                }
+            }, 150);
+        };
+        // Pause animations when tab is hidden
+        document.addEventListener('visibilitychange', function() {
+            animPaused = document.hidden;
+            // Pause all videos when tab hidden
+            var vids = document.querySelectorAll('video');
+            if (document.hidden) {
+                for (var i = 0; i < vids.length; i++) vids[i].pause();
+            } else {
+                // Resume video on active slide only
+                manageVideos(cur);
+            }
+        });
+
+        // Slide-specific data
+        var s2booths = [], s2att = [], s2miss = 0, s2cost = 0;
+        for (var r = 0; r < 4; r++)for (var c = 0; c < 8; c++)s2booths.push({ x: 100 + c * 140, y: 130 + r * 130, w: 55, h: 35 });
+        for (var i = 0; i < 100; i++)s2att.push({ x: Math.random() * 1920, y: Math.random() * 1080, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5, r: 2 + Math.random() * 2, t: Math.random() * 200 });
+
+        // Revenue calculator
+        var s5rev = 0;
+
+        // Video management: pause inactive videos, play active
+        function manageVideos(n) {
+            var allVids = document.querySelectorAll('video');
+            for (var i = 0; i < allVids.length; i++) {
+                var slide = allVids[i].closest('.slide');
+                if (slide && !slide.classList.contains('active')) {
+                    allVids[i].pause();
+                }
+            }
+            // Play video on active slide
+            var activeSlide = document.getElementById('s' + n);
+            if (activeSlide) {
+                var activeVids = activeSlide.querySelectorAll('video[autoplay]');
+                for (var i = 0; i < activeVids.length; i++) {
+                    activeVids[i].play().catch(function(){});
+                }
+            }
+        }
+
+        function drawAll() {
+            // Skip rendering when tab is hidden
+            if (animPaused) { requestAnimationFrame(drawAll); return; }
+            // Only render the active slide's canvas for performance
+            var n = cur;
+            var cv = document.getElementById('c' + n);
+            if (cv && cv.getContext) {
+                var cx = cv.getContext('2d');
+                var W = cv.width, H = cv.height;
+                cx.clearRect(0, 0, W, H);
+
+                // Grid for all slides
+                cx.strokeStyle = 'rgba(30,25,20,0.2)'; cx.lineWidth = 1;
+                for (var x = 0; x < W; x += 80) { cx.beginPath(); cx.moveTo(x, 0); cx.lineTo(x, H); cx.stroke() }
+                for (var y = 0; y < H; y += 80) { cx.beginPath(); cx.moveTo(0, y); cx.lineTo(W, y); cx.stroke() }
+
+                if (n === 1) {
+                    // Concentric sonar rings
+                    var t = Date.now() / 1000;
+                    for (var r = 0; r < 5; r++) {
+                        var rad = 80 + r * 90 + (Math.sin(t + r) * 10);
+                        cx.beginPath(); cx.arc(W / 2, H / 2, rad, 0, Math.PI * 2);
+                        cx.strokeStyle = 'rgba(230,126,34,' + (0.08 - r * 0.015) + ')'; cx.lineWidth = 2; cx.stroke();
+                    }
+                    // Particles
+                    for (var p = 0; p < 40; p++) {
+                        var a = t * 0.3 + p * 0.16;
+                        var d = 150 + p * 8 + Math.sin(t + p) * 20;
+                        var px = W / 2 + Math.cos(a) * d;
+                        var py = H / 2 + Math.sin(a) * d;
+                        cx.beginPath(); cx.arc(px, py, 1.5, 0, Math.PI * 2);
+                        cx.fillStyle = 'rgba(230,126,34,' + (0.1 + Math.sin(t + p) * 0.1) + ')'; cx.fill();
+                    }
+                }
+                else if (n === 2 && document.getElementById('s2').classList.contains('active')) {
+                    // Convention floor
+                    for (var b = 0; b < s2booths.length; b++) { var bo = s2booths[b]; cx.fillStyle = 'rgba(60,45,30,0.35)'; cx.fillRect(bo.x, bo.y, bo.w, bo.h); cx.strokeStyle = 'rgba(80,60,40,0.3)'; cx.strokeRect(bo.x, bo.y, bo.w, bo.h) }
+                    for (var a = 0; a < s2att.length; a++) {
+                        var p = s2att[a]; p.t--; if (p.t <= 0) { p.vx = (Math.random() - 0.5) * 2; p.vy = (Math.random() - 0.5) * 2; p.t = 100 + Math.random() * 200 }
+                        p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = W; if (p.x > W) p.x = 0; if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+                        for (var b = 0; b < s2booths.length; b++) { var bo = s2booths[b]; if (Math.abs(p.x - (bo.x + bo.w / 2)) < 50 && Math.abs(p.y - (bo.y + bo.h / 2)) < 50 && Math.random() < 0.001) s2miss++ }
+                        cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, Math.PI * 2); cx.fillStyle = 'rgba(160,140,110,0.4)'; cx.fill()
+                    }
+                    if (stageAt[2] >= 1) { s2cost += 0.47; document.getElementById('s2cost').textContent = '$' + Math.floor(s2cost).toLocaleString() }
+                    if (stageAt[2] >= 2) document.getElementById('s2miss').textContent = s2miss;
+                }
+                else if (n === 3 && document.getElementById('s5').classList.contains('active')) {
+                    // Gold particles
+                    var t = Date.now() / 1000;
+                    for (var p = 0; p < 30; p++) {
+                        var px = (p * 67) % W;
+                        var py = H - 50 - ((t * 20 + p * 30) % H);
+                        cx.beginPath(); cx.arc(px, py, 1 + Math.sin(t + p) * 0.5, 0, Math.PI * 2);
+                        cx.fillStyle = 'rgba(243,156,18,' + (0.1 + Math.sin(t * 2 + p) * 0.1) + ')'; cx.fill();
+                    }
+                    if (stageAt[5] >= 4 && s5rev < 103225) { s5rev += 17; document.getElementById('s4rev').textContent = '$' + Math.floor(s5rev).toLocaleString() }
+                }
+                else if (n === 3) {
+                    // Radar sweep
+                    var t = Date.now() / 1000;
+                    var angle = t * 0.8;
+                    cx.save(); cx.translate(W / 2, H / 2);
+                    for (var r = 0; r < 4; r++) { cx.beginPath(); cx.arc(0, 0, 80 + r * 70, 0, Math.PI * 2); cx.strokeStyle = 'rgba(230,126,34,' + (0.06 - r * 0.012) + ')'; cx.lineWidth = 1; cx.stroke() }
+                    cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(Math.cos(angle) * 300, Math.sin(angle) * 300); cx.strokeStyle = 'rgba(230,126,34,0.15)'; cx.lineWidth = 2; cx.stroke();
+                    cx.beginPath(); cx.moveTo(0, 0); cx.arc(0, 0, 300, angle - 0.3, angle); cx.closePath();
+                    var grd = cx.createRadialGradient(0, 0, 0, 0, 0, 300); grd.addColorStop(0, 'rgba(230,126,34,0.08)'); grd.addColorStop(1, 'rgba(230,126,34,0)');
+                    cx.fillStyle = grd; cx.fill();
+                    cx.restore();
+                }
+                else if (n === 3) {
+                    // Spotlight
+                    var t = Date.now() / 1000;
+                    cx.save();
+                    var grd = cx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, 350);
+                    grd.addColorStop(0, 'rgba(243,156,18,0.06)'); grd.addColorStop(0.5, 'rgba(243,156,18,0.02)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+                    cx.fillStyle = grd; cx.fillRect(0, 0, W, H);
+                    // Rising embers
+                    for (var p = 0; p < 20; p++) {
+                        var px = W / 2 + (Math.sin(t + p * 2) * 80);
+                        var py = H - ((t * 30 + p * 50) % H);
+                        cx.beginPath(); cx.arc(px, py, 1 + Math.sin(t * 3 + p) * 0.5, 0, Math.PI * 2);
+                        cx.fillStyle = 'rgba(243,156,18,' + (0.15 + Math.sin(t + p) * 0.1) + ')'; cx.fill();
+                    }
+                    cx.restore();
+                }
+                else {
+                    // Default: subtle orange particles
+                    var t = Date.now() / 1000;
+                    for (var p = 0; p < 15; p++) {
+                        var px = (p * 131 + Math.sin(t + p) * 20) % W;
+                        var py = (p * 97 + Math.cos(t + p) * 20) % H;
+                        cx.beginPath(); cx.arc(px, py, 1, 0, Math.PI * 2);
+                        cx.fillStyle = 'rgba(230,126,34,0.08)'; cx.fill();
+                    }
+                }
+            }
+            requestAnimationFrame(drawAll);
+        }
+
+        // ===== SLIDE 5: MARKET OPPORTUNITY ENGINE =====
+        // Revenue: 70% Pro ($795) + 30% Premium ($1,995) = $1,155 blended
+        // Split: 70% Sonar / 30% Organizer
+        var moPhase = 0;
+        var moPhases = [
+            { amt:'', name:'', sub:'', detail:'', color:'#34d399', center:'' },
+            { amt:'$121K', name:'LBCC \u2014 Launch Market', sub:'LAUNCH ADDRESSABLE MARKET (LAM)',
+              detail:'35 Events/yr \u00b7 10,500 Booths \u00b7 1% Adoption', color:'#34d399',
+              center:'LAM',
+              sonar:'$85K', organizer:'$36K', revId:'moRevLam' },
+            { amt:'$1.6M', name:'SoCal Convention Circuit', sub:'SERVICEABLE OBTAINABLE MARKET (SOM)',
+              detail:'18 Venues \u00b7 330 Events/yr \u00b7 1.5% Adoption', color:'#f39c12',
+              center:'SOM',
+              sonar:'$1.12M', organizer:'$482K', revId:'moRevSom' },
+            { amt:'$6.3M', name:'Western + Texas Expansion', sub:'SERVICEABLE AVAILABLE MARKET (SAM)',
+              detail:'45 Venues \u00b7 992 Events/yr \u00b7 2% Adoption', color:'#e67e22',
+              center:'SAM',
+              sonar:'$4.43M', organizer:'$1.90M', revId:'moRevSam' },
+            { amt:'$15.8B', name:'US B2B Trade Show Market', sub:'TOTAL ADDRESSABLE MARKET (TAM)',
+              detail:'13,000 Events \u00b7 1.8M Exhibitor Booths', color:'#c8b59a',
+              center:'TAM' }
+        ];
+        var moDonut = {
+            1: { id:'mo-d-lam', bg:'mo-d-lam-bg', off:'277', leg:'mo-leg-lam' },
+            2: { id:'mo-d-som', bg:'mo-d-som-bg', off:'304', leg:'mo-leg-som' },
+            3: { id:'mo-d-sam', bg:'mo-d-sam-bg', off:'208', leg:'mo-leg-sam' },
+            4: { id:'mo-d-tam', bg:'mo-d-tam-bg', off:'73', leg:'mo-leg-tam' }
+        };
+        var moLamPins = ['mo-p-lbcc'], moLamLabels = ['mo-pl-lbcc'];
+        var moSomPins = ['mo-p-lacc','mo-p-anaheim','mo-p-sandiego','mo-p-pasadena','mo-p-ontario','mo-p-riverside','mo-p-palmsprings','mo-p-santabarbara','mo-p-ventura','mo-p-delmar'];
+        var moSomLabels = ['mo-pl-lacc','mo-pl-anaheim','mo-pl-sandiego','mo-pl-pasadena','mo-pl-ontario','mo-pl-riverside','mo-pl-palmsprings','mo-pl-santabarbara','mo-pl-ventura','mo-pl-delmar'];
+        var moSamPins = ['mo-p2-longbeach','mo-p2-sandiego','mo-p-sf','mo-p-lv','mo-p-phx','mo-p-sea','mo-p-pdx','mo-p-den','mo-p-slc','mo-p-austin','mo-p-dallas','mo-p-houston','mo-p-abq','mo-p-sanantonio'];
+        var moSamLabels = ['mo-pl2-longbeach','mo-pl2-sandiego','mo-pl-sf','mo-pl-lv','mo-pl-phx','mo-pl-sea','mo-pl-pdx','mo-pl-den','mo-pl-slc','mo-pl-austin','mo-pl-dallas','mo-pl-houston','mo-pl-abq','mo-pl-sanantonio'];
+        var moTamPins = ['mo-p-chi','mo-p-nyc','mo-p-dc','mo-p-mia','mo-p-atl','mo-p-msp','mo-p-nash','mo-p-orl','mo-p-nola','mo-p-tampa','mo-p-pit','mo-p-det'];
+        var moTamLabels = ['mo-pl-chi','mo-pl-nyc','mo-pl-dc','mo-pl-mia','mo-pl-atl','mo-pl-msp','mo-pl-nash','mo-pl-orl','mo-pl-nola','mo-pl-tampa','mo-pl-pit','mo-pl-det'];
+
+        function moShow(ids, delay) {
+            ids.forEach(function(id,i){
+                setTimeout(function(){ var e=document.getElementById(id); if(e)e.classList.add('on'); }, delay+i*60);
+            });
+        }
+
+        function resetMarketSlide() {
+            moPhase = 0;
+            var sl = document.getElementById('moSocalLayer'), ul = document.getElementById('moUsLayer'), si = document.getElementById('moSocalInner');
+            if(sl) sl.style.opacity='1'; if(ul) ul.style.opacity='0'; if(si) si.style.transform='scale(1.3) translate(0,0)';
+            document.querySelectorAll('#s5 .mo-pin, #s5 .mo-plbl').forEach(function(el){ el.classList.remove('on'); });
+            document.querySelectorAll('#s5 .mo-donut-arc').forEach(function(el){ el.classList.remove('on'); el.style.strokeDashoffset=''; });
+            document.querySelectorAll('#s5 .mo-leg').forEach(function(el){ el.classList.remove('on'); });
+            document.querySelectorAll('#s5 .mo-rev-row').forEach(function(el){ el.classList.remove('on'); });
+            document.querySelectorAll('#s5 .mo-rev-header').forEach(function(el){ el.classList.remove('on'); });
+            var pi = document.getElementById('moPhaseInfo'); if(pi) pi.classList.remove('on','us-pos');
+            var cl = document.getElementById('moCLabel'); if(cl) cl.textContent='';
+            var cs = document.getElementById('moCSub'); if(cs) cs.textContent='';
+        }
+
+        function goToMarket(p) {
+
+            var d = moPhases[p];
+            if(!d) return;
+            var info = document.getElementById('moPhaseInfo');
+            info.classList.add('on');
+            document.getElementById('moPhaseAmt').textContent = d.amt;
+            document.getElementById('moPhaseAmt').style.color = d.color;
+            document.getElementById('moPhaseName').textContent = d.name;
+            document.getElementById('moPhaseName').style.color = d.color;
+            document.getElementById('moPhaseSub').textContent = d.sub;
+            document.getElementById('moPhaseDetail').textContent = d.detail;
+            var sl = document.getElementById('moSocalLayer'), ul = document.getElementById('moUsLayer'), si = document.getElementById('moSocalInner');
+            if (p <= 2) {
+                sl.style.opacity='1'; ul.style.opacity='0'; info.classList.remove('us-pos');
+                if (p === 1) si.style.transform='scale(2.5) translate(-3%, -5%)';
+                if (p === 2) si.style.transform='scale(1) translate(0,0)';
+            } else {
+                sl.style.opacity='0'; ul.style.opacity='1'; info.classList.add('us-pos');
+            }
+            if (p===1){ moShow(moLamPins,200); moShow(moLamLabels,500); }
+            if (p===2){ moShow(moSomPins,100); moShow(moSomLabels,400); }
+            if (p===3){ moShow(moSamPins,200); moShow(moSamLabels,500); }
+            if (p===4){ moShow(moTamPins,200); moShow(moTamLabels,500); }
+            if (moDonut[p]) {
+                var dt=moDonut[p], bg=document.getElementById(dt.bg), arc=document.getElementById(dt.id), leg=document.getElementById(dt.leg);
+                if(bg) bg.classList.add('on');
+                if(arc){ arc.classList.add('on'); arc.style.strokeDashoffset=dt.off; }
+                if(leg) leg.classList.add('on');
+            }
+            document.getElementById('moCLabel').textContent=d.center;
+            document.getElementById('moCLabel').style.color=d.color;
+            // Show revenue row with both columns immediately
+            if (d.revId) {
+                // Show header on first revenue row
+                var hdr = document.getElementById('moRevHeader');
+                if(hdr && !hdr.classList.contains('on')) {
+                    hdr.classList.add('on');
+                }
+                setTimeout(function(){
+                    var rr = document.getElementById(d.revId); if(rr) rr.classList.add('on');
+                }, 600);
+            }
+        }
+        // Init
+        for (var n = 1; n <= 11; n++)initCanvas(n);
+        showSlide(1);
+        manageVideos(1);
+        drawAll();
+    </script>
+
+
+<script id="css-scale-js">
+    (function() {
+        function updateScale() {
+            var scaleX = window.innerWidth / 1920;
+            var scaleY = window.innerHeight / 1080;
+            var scale = Math.min(scaleX, scaleY);
+            document.documentElement.style.setProperty('--slide-scale', scale);
+            var slides = document.querySelectorAll('.slide');
+            var offsetX = (window.innerWidth - 1920 * scale) / 2;
+            var offsetY = (window.innerHeight - 1080 * scale) / 2;
+            for (var i = 0; i < slides.length; i++) {
+                slides[i].style.left = offsetX + 'px';
+                slides[i].style.top = offsetY + 'px';
+            }
+        }
+        window.addEventListener('load', updateScale);
+        window.addEventListener('resize', updateScale);
+        updateScale();
+    })();
+</script>
+
+</body>
+
+</html>

@@ -36,13 +36,32 @@ def build():
             parts.append(f.read())
     
     output = ''.join(parts)
-    out_path = os.path.join(PUBLIC, 'index.html')
+    # 2026-06-03: index.html is now the hand-authored PUBLIC LANDING PAGE (served at
+    # sonarconnections.com root). The pitch deck therefore builds to deck.html so a
+    # `python build.py` can never overwrite the homepage. The deck is reachable via
+    # /events (events-deck-access.html) — deck.html itself is unrouted.
+    out_path = os.path.join(PUBLIC, 'deck.html')
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(output)
-    
+
     lines = output.count('\n') + 1
-    print(f"Built index.html: {len(output):,} bytes, {lines:,} lines")
+    print(f"Built deck.html: {len(output):,} bytes, {lines:,} lines")
     print(f"Assembled from {len(COMPONENTS)} components")
+
+    # === Generate projector mode clone ===
+    projector_html = output.replace('<body>', '<body class="projector-mode">')
+    projector_path = os.path.join(PUBLIC, 'deck-projector.html')
+    with open(projector_path, 'w', encoding='utf-8') as f:
+        f.write(projector_html)
+    print(f"Projector clone: {len(projector_html):,} bytes -> deck-projector.html")
+
+    # === Generate phone mode clone ===
+    import subprocess
+    phone_script = os.path.join(BASE, 'scripts', 'build_phone_clone.py')
+    if os.path.exists(phone_script):
+        subprocess.run(['python', phone_script], check=True)
+    else:
+        print("Phone clone script not found, skipping")
 
 if __name__ == '__main__':
     build()

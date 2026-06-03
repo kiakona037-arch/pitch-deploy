@@ -6,6 +6,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "redirects": [
+      { "source": "/index.html", "destination": "/", "type": 301 }
+    ],
+    "rewrites": [
+      { "source": "/events", "destination": "/events-deck-access.html" }
+    ],
     "headers": [
       {
         "source": "**/*.html",
