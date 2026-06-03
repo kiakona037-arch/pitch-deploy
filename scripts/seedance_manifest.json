@@ -1,0 +1,54 @@
+{
+  "_comment": "Seedance 2.0 (fal.ai) shot list. Replace PLACEHOLDER prompts + REPLACE_* image URLs with the strategist's video plan. aspect_ratio 9:16 = phone slots, 16:9 = hero/deck/sizzle. image_url/end_image_url/image_urls must be PUBLIC URLs (host stills on Firebase first). Dry-run: `node scripts/gen_seedance_videos.mjs`.",
+  "defaults": { "resolution": "720p", "fast": false },
+  "shots": [
+    {
+      "id": "hero-loop",
+      "placement": "hero",
+      "endpoint": "text-to-video",
+      "aspect_ratio": "16:9",
+      "duration": "6",
+      "generate_audio": false,
+      "prompt": "PLACEHOLDER - ambient hero: a dark city map at night seen from above, a sonar ping ripples outward, glowing dots awaken across the street grid, subtle cinematic motion, teal/orange/magenta accents, no text."
+    },
+    {
+      "id": "events-slot",
+      "placement": "events",
+      "endpoint": "image-to-video",
+      "aspect_ratio": "9:16",
+      "duration": "5",
+      "generate_audio": false,
+      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
+      "prompt": "PLACEHOLDER - person on a busy expo floor glances at their phone, a live map glows on screen, they smile and walk toward a booth. Natural handheld motion."
+    },
+    {
+      "id": "social-slot",
+      "placement": "social",
+      "endpoint": "image-to-video",
+      "aspect_ratio": "9:16",
+      "duration": "5",
+      "generate_audio": false,
+      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
+      "prompt": "PLACEHOLDER - bright coffee shop, phone shows a nearby-person card, a tap reveals a profile, warm natural light, relaxed pacing."
+    },
+    {
+      "id": "live-slot",
+      "placement": "live",
+      "endpoint": "image-to-video",
+      "aspect_ratio": "9:16",
+      "duration": "5",
+      "generate_audio": false,
+      "image_url": "REPLACE_WITH_PUBLIC_STILL_URL",
+      "prompt": "PLACEHOLDER - night bar, a Swag Bag perk card pops up on the phone (line-skip, LB$), neon magenta glow, energetic motion."
+    },
+    {
+      "id": "sizzle",
+      "placement": "deck",
+      "endpoint": "text-to-video",
+      "aspect_ratio": "16:9",
+      "duration": "15",
+      "generate_audio": true,
+      "prompt": "PLACEHOLDER multi-shot - At 0s: sunrise over Long Beach, an expo floor wakes up. Cut scene to: people connecting on the floor, a digital handshake. Cut scene to: afternoon coffee networking, a tap-to-connect. Cut scene to: night, neon bars, a perk drops to a phone. End on a glowing sonar radar logo. Upbeat cinematic music, ambient crowd."
+    }
+  ]
+}

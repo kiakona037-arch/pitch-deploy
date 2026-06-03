@@ -4,3 +4,6 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Seedance pipeline output (generated MP4s — web-encode before moving into public/)
+scripts/seedance_out/
